@@ -1,0 +1,205 @@
+Build a proof-of-concept for SkinSage, an AI skincare consultant. The goal is to demonstrate the full loop: photo → skin analysis → conversational profile building → RAG-based product recommendation. No auth, no database, no deployment — everything runs locally.
+
+## Stack
+- Python 3.11+
+- FastAPI + Pydantic v2
+- OpenAI Python SDK (GPT-4o for chat, GPT-4o Vision for image analysis)
+- ChromaDB (in-memory, no persistence needed)
+- python-dotenv for the API key
+
+## Project Structure to Create
+
+skinsage-poc/
+├── backend/
+│   ├── main.py
+│   ├── requirements.txt
+│   ├── .env.example
+│   ├── services/
+│   │   ├── vision_service.py
+│   │   ├── rag_service.py
+│   │   └── conversation_service.py
+│   ├── knowledge_base/
+│   │   ├── products/
+│   │   │   ├── cerave_hydrating_cleanser.txt
+│   │   │   ├── la_roche_posay_spf50.txt
+│   │   │   ├── the_ordinary_niacinamide.txt
+│   │   │   ├── neutrogena_hydro_boost.txt
+│   │   │   └── paulas_choice_bha.txt
+│   │   └── ingredients/
+│   │       ├── niacinamide.txt
+│   │       ├── hyaluronic_acid.txt
+│   │       ├── spf.txt
+│   │       ├── vitamin_c.txt
+│   │       └── retinol.txt
+│   └── models/
+│       └── schemas.py
+└── frontend/
+    └── index.html
+
+---
+
+## What to Build
+
+### schemas.py
+Pydantic v2 models:
+- SkinProfile: monk_tone (int 1-10), observed_concerns (list[str]), skin_type (str), confirmed_concerns (list[str]), allergies (list[str]), budget_monthly (int), goals (list[str]), fragrance_free (bool)
+- ConversationTurn: role (str), content (str)
+- AnalysisRequest: image_base64 (str)
+- ChatRequest: conversation_history (list[ConversationTurn]), skin_profile (SkinProfile), user_message (str)
+- RecommendationResponse: product_name (str), brand (str), amazon_asin (str), routine_step (str), why_recommended (str), key_ingredients (list[str])
+
+---
+
+### vision_service.py
+Function: analyze_skin_photo(image_base64: str) -> SkinProfile
+
+Call GPT-4o Vision with the image. System prompt should instruct it to:
+- Estimate the Monk Skin Tone (1-10 scale, where 1 is lightest and 10 is deepest)
+- Identify visible skin concerns (hyperpigmentation, texture, dryness, oiliness, redness, acne)
+- Estimate skin type (oily/dry/combination/normal)
+- Return ONLY a JSON object matching the SkinProfile schema (observed_concerns and monk_tone filled, everything else empty defaults)
+- Never make medical diagnoses
+- If image quality is too low to analyze, return monk_tone: 0 as a signal
+
+Parse the JSON response and return a SkinProfile object.
+
+---
+
+### rag_service.py
+On startup, load all .txt files from knowledge_base/products/ and knowledge_base/ingredients/ into an in-memory Chroma collection using OpenAI embeddings (text-embedding-ada-002).
+
+Function: retrieve_relevant_products(skin_profile: SkinProfile, top_k: int = 3) -> list[str]
+
+Build a query string from the skin profile fields (monk tone, concerns, skin type, goals, budget, fragrance preference) and do a semantic similarity search against the Chroma collection. Return the top_k most relevant document chunks as strings.
+
+---
+
+### conversation_service.py
+Function: get_next_response(conversation_history: list[ConversationTurn], skin_profile: SkinProfile, user_message: str, retrieved_context: list[str]) -> tuple[str, SkinProfile, bool]
+
+Returns: (assistant_response, updated_skin_profile, is_ready_to_recommend)
+
+System prompt for GPT-4o:
+"""
+You are SkinSage, a knowledgeable and empathetic AI skincare consultant.
+
+You have already analyzed the user's photo. Their current skin profile is provided to you.
+
+Your job is to have a natural conversation to fill in the missing profile fields. Ask ONE question at a time. Never ask multiple questions in one turn. Keep responses to 2-3 sentences max.
+
+Ask about in this order (skip if already known):
+1. Their main skin concern right now
+2. Any known allergies or sensitivities to ingredients
+3. Monthly skincare budget in USD
+4. Whether they prefer fragrance-free products
+5. Any current products they are already using and want to keep
+
+After you have collected at least: confirmed_concerns, budget_monthly, and fragrance_free — set is_ready_to_recommend to true in your response.
+
+When ready to recommend, do not give recommendations in conversation. Just say you have everything you need and will generate their routine now.
+
+Never diagnose medical conditions. Never say a product will definitely work. Always say results may vary and to patch test new products.
+
+Current skin profile from photo analysis:
+{skin_profile}
+
+Relevant product and ingredient context from knowledge base:
+{retrieved_context}
+
+Update the skin profile JSON with any new information extracted from the user's message. Return your response as JSON:
+{{
+  "assistant_response": "your conversational response here",
+  "updated_profile": {{ ...full updated SkinProfile as JSON... }},
+  "is_ready_to_recommend": false
+}}
+"""
+
+Parse the JSON response and return the tuple.
+
+---
+
+### main.py
+FastAPI app with CORS enabled for all origins (POC only).
+
+Endpoints:
+
+POST /analyze
+- Body: AnalysisRequest (image_base64)
+- Calls vision_service.analyze_skin_photo()
+- Returns the SkinProfile JSON
+- Also initializes a session opening message from SkinSage acknowledging what it observed
+
+POST /chat
+- Body: ChatRequest (conversation_history, skin_profile, user_message)
+- Calls rag_service.retrieve_relevant_products() with current skin_profile
+- Calls conversation_service.get_next_response()
+- If is_ready_to_recommend is True: call a recommend() function that formats the retrieved_context into 3 clean RecommendationResponse objects and returns them alongside the assistant response
+- Returns: { assistant_response, updated_skin_profile, recommendations (list, empty until ready), is_complete (bool) }
+
+GET /health
+- Returns { status: ok }
+
+On startup: initialize the Chroma collection by loading and embedding all knowledge base files.
+
+---
+
+### Knowledge Base Files
+
+Write realistic, detailed content for each file. Each product file should include:
+- Product name, brand, ASIN, price range
+- Routine step (cleanser/moisturizer/serum/spf/treatment) and time (morning/evening/both)
+- Key ingredients with brief explanation of what each does
+- Skin types it works for
+- Monk tones it works for and any specific notes for deeper skin tones (e.g. SPF white cast)
+- Whether fragrance free and cruelty free
+- Why it works (ingredient science, not marketing language)
+- What it is NOT good for
+
+Each ingredient file should include:
+- What the ingredient does at a cellular/skin level
+- Effective concentration range
+- How it behaves differently on deeper skin tones if relevant
+- What it pairs well with and what it conflicts with
+- Any sensitization or overuse risks
+
+Use real, currently available products with real ASINs. Products should span a range of price points ($8–$40) and be available on Amazon.
+
+---
+
+### frontend/index.html
+
+Single HTML file, no frameworks, no build step. Inline CSS and JS only.
+
+Layout:
+- Header: "SkinSage — AI Skincare Consultant (POC)"
+- Left panel: photo upload area (file input + preview of uploaded image) and an "Analyze Skin" button
+- Right panel: chat interface — scrollable message history, text input, send button
+- Below chat: recommendations panel (hidden until recommendations arrive) — shows product cards with name, brand, why recommended, key ingredients, and a placeholder Amazon link using the ASIN
+
+Flow:
+1. User uploads photo and clicks Analyze
+2. JS sends image as base64 to POST /analyze
+3. Response triggers first SkinSage message in chat: "I can see [what was observed]. Let me ask you a few questions..."
+4. User types responses, JS sends to POST /chat with full conversation history and current skin_profile
+5. Chat updates with each turn
+6. When is_complete is true, recommendation cards appear below the chat
+7. Show a loading spinner during any API call
+
+Style: clean, minimal, white background, soft sage green (#7A9E7E) as accent color, Inter or system font, mobile-friendly width.
+
+---
+
+## requirements.txt should include:
+fastapi, uvicorn, openai, chromadb, pydantic, python-dotenv, python-multipart, httpx
+
+## .env.example:
+OPENAI_API_KEY=your_key_here
+
+## README instructions:
+1. pip install -r requirements.txt
+2. Copy .env.example to .env and add key
+3. cd backend && uvicorn main:app --reload
+4. Open frontend/index.html in a browser
+5. Upload a photo and start the conversation
+
+Do not use LangChain. Do not use any paid services beyond the OpenAI API. Do not add authentication. Do not add a database. Keep it simple and working.
