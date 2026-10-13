@@ -1,0 +1,54 @@
+Ingredient: Azelaic Acid
+INCI name: Azelaic Acid
+Also known as: Nonanedioic acid, 1,7-heptanedicarboxylic acid
+
+Natural source:
+Naturally occurring dicarboxylic acid found in wheat, rye, and barley. Also produced by the skin commensal yeast Malassezia furfur. Cosmetically synthesized for skincare use.
+
+Mechanism of action (multi-target):
+1. Tyrosinase inhibition → reduces melanin synthesis → lightens hyperpigmentation
+2. DOPA oxidase inhibition → second melanin pathway blockade (dual mechanism for pigmentation)
+3. Keratolytic effect → normalizes follicular keratinization → prevents comedone formation
+4. Anti-Propionibacterium acnes (C. acnes) → antibacterial at comedonal and inflammatory acne sites
+5. Anti-inflammatory → inhibits reactive oxygen species production by neutrophils
+6. Reduces rosacea papules and erythema (FDA-approved at 15% prescription for rosacea)
+7. Does NOT affect normally pigmented skin — only abnormally pigmented areas (targeted mechanism)
+
+Effective concentrations:
+- OTC: 10% (Finacea OTC, The Ordinary)
+- Prescription: 15% (Finacea gel, Skinoren cream) — for rosacea
+- Prescription: 20% (Azelex cream) — for acne + hyperpigmentation
+
+Why azelaic acid is exceptional for Monk tones 5-10:
+Unlike BHAs, retinol, and even some forms of vitamin C, azelaic acid rarely causes the irritation that triggers PIH — the main concern when treating hyperpigmentation in deeper skin tones. It specifically targets abnormal melanocytes (those producing excess melanin at PIH sites) without damaging normal melanocytes. This selective action means:
+- No risk of paradoxical hyperpigmentation from the treatment itself
+- Safe for daily use without the cautious introduction required for BHAs/retinol
+- Compatible with all other PIH treatments (niacinamide, alpha arbutin, vitamin C)
+- Safe during pregnancy — an extraordinary advantage when treating melasma or pregnancy-induced PIH
+
+Clinical comparison to other brighteners:
+- vs Hydroquinone 4%: Comparable efficacy in clinical trials (Balina & Graupe, 1991), without HQ's side effects (ochronosis risk, thinning)
+- vs Kojic Acid: Less irritating, more stable, better safety profile
+- vs Alpha Arbutin: Complementary mechanisms — arbutin inhibits melanosome transfer, AzA inhibits synthesis; use both for additive effect
+
+Monk tone specific notes:
+- Tones 4-10: First-line OTC PIH recommendation. Use 10% twice daily or once daily to tolerance. Visible results at 8-12 weeks consistent use.
+- Tones 7-10: Arguably the safest effective brightening treatment available OTC. Zero risk of irritation-triggered worsening. Can be the cornerstone of a deep skin tone PIH regimen.
+- Tones 1-3: Excellent for rosacea — the anti-inflammatory and anti-papule mechanisms provide genuine rosacea management at 10%, comparable to some lower-dose prescriptions.
+- Pregnancy across all tones: Safe during pregnancy (Pregnancy category B) — one of the very few effective brightening/acne treatments that can be used.
+
+Interactions:
+- All common actives: Compatible. No negative known interactions.
+- Retinol: Can alternate evenings or use together — no interaction concerns
+- Niacinamide: Synergistic (complementary melanin pathway inhibition)
+- Vitamin C: Synergistic (triple-mechanism approach to PIH)
+
+Sensitization risk: Low. Mild initial stinging/tingling in first 1-2 weeks (resolves).
+Pregnancy safety: Category B — generally considered safe. One of the safest OTC actives available for pregnant users.
+Photosensitivity: None
+Available in: Gels, creams, serums
+
+Key studies:
+- Balina & Graupe (1991): Azelaic acid 20% vs hydroquinone 4% for PIH — comparable efficacy
+- Katsambas & Graupe (1989): Azelaic acid for rosacea
+- Baliña & Graupe (1991): Randomized double-blind trial of AzA in PIH

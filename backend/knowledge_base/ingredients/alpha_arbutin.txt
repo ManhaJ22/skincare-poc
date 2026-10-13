@@ -1,0 +1,51 @@
+Ingredient: Alpha Arbutin
+INCI name: Alpha-Arbutin
+Also known as: Alpha-D-glucoside, 4-hydroxyphenyl-alpha-glucopyranoside, "plant-derived hydroquinone"
+
+Relationship to hydroquinone:
+Alpha arbutin is hydroquinone attached to a glucose molecule. When applied topically, skin enzymes (arylsulfatase, glucosidases) slowly cleave the glucose, releasing hydroquinone locally at the melanocyte level. This achieves the tyrosinase-inhibiting action of hydroquinone with dramatically reduced systemic exposure and without hydroquinone's risks at typical topical concentrations.
+
+Note: Beta-arbutin also exists — this is the beta-glucoside form, which is metabolized to hydroquinone more readily and may carry more irritation risk. Alpha-arbutin is preferred.
+
+Mechanism of action:
+1. Inhibits tyrosinase (the primary enzyme converting tyrosine → melanin) → reduces new melanin synthesis at hyperpigmentation sites
+2. Inhibits melanosome maturation → reduces packaging and transfer of melanin to skin surface
+3. Does not kill melanocytes (unlike some aggressive treatments) → no paradoxical depigmentation risk
+4. Selective for hyperpigmented areas — affects overactive melanocytes more than normal ones
+
+Effective concentrations:
+- 1-2%: Clinical range for OTC products (The Ordinary: 2%)
+- 3%: Maximum typically used in OTC; higher risks are unclear
+- Prescription (Japan, Korea): Up to 7%
+- Note: Works more slowly than vitamin C or retinol but with greater safety margin
+
+Timeline expectations:
+- Visible improvements: 8-12 weeks minimum with twice-daily use
+- Maximum benefit: 16-24 weeks of consistent use
+- Maintenance: Continue use or pigmentation may recur (UV exposure ongoing)
+
+Monk tone specific notes — HIGH PRIORITY INGREDIENT:
+- Tones 5-10: Alpha arbutin is one of the cornerstone PIH ingredients for medium-to-deep skin tones. Post-inflammatory hyperpigmentation is the dominant skin concern for these tones, and alpha arbutin addresses it directly at the melanin synthesis level without causing irritation that worsens PIH. Stack with niacinamide (different mechanism: blocks transfer) and azelaic acid (different mechanism: dual pathway inhibition) for comprehensive PIH management.
+- Tones 1-3: Addresses solar lentigines (sun spots) and post-acne erythema-associated pigment. Works but slower visible change on lighter tone hyperpigmentation (less melanin dense). Vitamin C may provide faster results.
+- Melasma: Alpha arbutin + SPF is a foundational OTC approach. Will not clear melasma alone but significantly reduces new melanin production.
+
+Interactions:
+- Niacinamide: Synergistic — complementary mechanisms for pigmentation reduction (combine in AM routine for maximum effect)
+- Vitamin C: Synergistic — three mechanisms simultaneously: alpha arbutin (synthesis inhibition) + niacinamide (transfer inhibition) + vitamin C (antioxidant + synthesis inhibition). The strongest OTC PIH regimen.
+- Azelaic acid: Synergistic — adds the keratolytic and anti-inflammatory pathway
+- No known negative interactions with common actives
+
+Stability:
+- Alpha arbutin is relatively stable in formulations at pH 5-7
+- More stable than hydroquinone (which oxidizes rapidly)
+- Store away from heat and light
+
+Sensitization risk: Low. Cross-reactivity with hydroquinone is theoretically possible — patch test for hydroquinone-sensitive individuals.
+Pregnancy safety: Safe (preferred over hydroquinone which is Category C)
+Photosensitivity: None
+Available in: Serums (most concentrated), toners, moisturizers
+
+Key studies:
+- Sugimoto et al. (2004): Alpha arbutin inhibits melanin synthesis and tyrosinase activity
+- Funasaka et al. (2000): Clinical study of arbutin in hyperpigmentation treatment
+- Matsuda et al. (2008): Comparison of arbutin forms and melanin inhibition

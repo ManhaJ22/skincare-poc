@@ -1,12 +1,44 @@
-INGREDIENT: Hyaluronic acid (sodium hyaluronate, hydrolyzed hyaluronic acid)
+Ingredient: Hyaluronic Acid
+INCI name: Sodium Hyaluronate (salt form), Hyaluronic Acid
+Also known as: HA, Hyaluronan, Sodium Hyaluronate
 
-WHAT IT DOES AT A SKIN LEVEL: a glycosaminoglycan that occurs naturally in the dermis. Applied topically, it is a humectant: it binds water (it can hold many times its weight) in the upper layers of the stratum corneum. That temporarily plumps the surface, softens fine dehydration lines, and improves elasticity. High-molecular-weight HA stays on the surface and forms a hydrating film. Low-molecular-weight and hydrolyzed HA penetrate slightly deeper. Topical HA does not replace the dermal HA lost with age.
+Mechanism of action:
+Hyaluronic acid is a glycosaminoglycan naturally present in connective tissue, synovial fluid, and the extracellular matrix of skin. It is a powerful humectant — it holds up to 1,000x its weight in water by creating a hydrogen-bonded network that traps water molecules. Primary actions:
+1. Draws moisture from environment into the outer skin layers (humectant)
+2. High molecular weight forms a surface film → reduces TEWL (transepidermal water loss)
+3. Low molecular weight penetrates the stratum corneum → delivers hydration to deeper layers
+4. Plumps the skin acutely → reduces appearance of fine lines from dehydration
+5. Supports wound healing through interaction with CD44 receptors
 
-EFFECTIVE CONCENTRATION: 0.1-2%. Most serums are around 1-2%. Higher concentrations can feel sticky and give no extra benefit.
+Molecular weight matters:
+- High MW (>1 MDa): Surface humectant, film-forming, reduces TEWL. Best for normal-dry skin.
+- Medium MW (50kDa-1MDa): Penetrates outer layers, provides structural support
+- Low MW (<50 kDa): Penetrates more deeply, more anti-inflammatory but can cause irritation in some
+- Hydrolyzed HA/Nano HA (<10 kDa): Deepest penetration — used in some clinical products
+- Best formulas combine multiple molecular weights (multi-weight HA)
 
-DEEPER SKIN TONES (Monk 6-10): no tone-specific risks. Dehydration often shows as an ashy, dull, or grey cast on deeper skin, and humectant hydration visibly restores luminosity. HA is non-irritating, so it carries no PIH risk.
+Application technique — critical:
+Apply to DAMP skin (immediately post-cleansing or after misting). On completely dry skin, especially in low-humidity environments, HA draws from deeper skin layers → causes transient tightness. With moisture present on the surface → draws that water instead → plumping and comfortable.
 
-PAIRS WELL WITH: almost everything. It is especially useful with occlusives/emollients (ceramides, squalane, dimethicone) that seal in the water it draws up, and it buffers drier actives such as retinol, salicylic acid, and vitamin C. Apply to damp skin.
-CONFLICTS: no chemical conflicts. In very dry climates (low humidity) without an occlusive on top, humectants can pull water from deeper skin and make skin feel tighter.
+Monk tone specific notes:
+- ALL tones: Universal ingredient. Dehydration affects all Monk tones equally. No tone-specific concerns.
+- Tones 7-10: Dehydration on deeper skin tones can exaggerate ashiness and reduce luminosity. Consistent HA use improves radiance and skin texture regardless of other treatments.
+- Note: HA does NOT address hyperpigmentation. It is a hydration ingredient only.
 
-SENSITIZATION / OVERUSE RISKS: very low; allergic reactions are rare. Problems usually come from other ingredients in the formula (fragrance, preservatives) rather than HA itself.
+Effective concentrations:
+- 0.1-1%: Effective humectant range. Higher % is not necessarily better — what matters is molecular weight and formulation, not concentration.
+- Most serums: 1-2% sodium hyaluronate (salt form is more stable in formula)
+
+Interactions and combinations:
+- Works with everything. Stable across pH ranges. No known negative interactions.
+- Best combined with an occlusive (ceramide cream, petrolatum) to seal in the moisture
+- Does NOT replace an occlusive moisturizer — HA alone on very dry skin may increase water loss without a sealant on top
+
+Sensitization risk: Extremely low. HA is naturally present in skin. True HA allergy has not been reliably documented.
+Pregnancy safety: Safe
+Photosensitivity: None
+Available in: Serums, essences, moisturizers, toners, sheet masks, eye creams
+
+Key studies:
+- Papakonstantinou et al. (2012): Comprehensive review of HA in skin hydration and wound healing
+- Gallo et al. (2011): Low vs high molecular weight HA effects on skin penetration

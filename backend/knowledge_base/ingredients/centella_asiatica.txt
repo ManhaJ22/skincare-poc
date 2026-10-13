@@ -1,0 +1,55 @@
+Ingredient: Centella Asiatica
+INCI name: Centella Asiatica Extract, Centella Asiatica Leaf Extract, Centella Asiatica Leaf Water
+Also known as: Cica, Tiger Grass, Gotu Kola, Asiatic Pennywort, Brahmi (in Ayurvedic medicine)
+
+Active compounds:
+Centella asiatica contains four main bioactive triterpenes:
+1. Madecassoside: Anti-inflammatory, wound healing, fibroblast stimulation
+2. Asiaticoside: Collagen synthesis promotion, wound healing
+3. Asiatic acid: Anti-inflammatory, antioxidant, collagen synthesis
+4. Madecassic acid: Anti-inflammatory, antioxidant
+
+Also contains: Flavonoids (quercetin, kaempferol), phytosterols, tannins, amino acids, polyunsaturated fatty acids
+
+Mechanism of action:
+1. Fibroblast stimulation → upregulates collagen I and III synthesis → structural skin support
+2. NF-κB pathway inhibition → reduces pro-inflammatory cytokines (IL-1β, IL-6, TNF-α) → anti-inflammatory
+3. Accelerates re-epithelialization → wound healing and post-procedure recovery
+4. Antioxidant protection → reduces oxidative stress from UV and environmental exposure
+5. Inhibits MMP (matrix metalloproteinase) activity → prevents collagen degradation
+6. Anti-itch properties → reduces histamine-triggered itch in eczema
+
+Clinical applications with evidence:
+- Rosacea: Reduces papule count and erythema (madecassoside mechanism)
+- Post-laser/procedure recovery: Accelerates barrier restoration
+- Minor wound healing: FDA-approved for OTC wound care in some countries
+- Eczema symptom reduction: Anti-itch and barrier-supporting properties
+- Stretch marks: Some evidence for prevention with early application
+
+Effective concentrations:
+- As extract: 1-5% typically; some concentrated products 10-80%
+- Beauty of Joseon Centella Serum: 80% whole-plant extract
+- Skin standardized to madecassoside: Look for products specifying active triterpene content
+
+Monk tone specific notes:
+- Tones 1-3: HIGHEST VALUE for rosacea management. Madecassoside is one of the best-documented OTC ingredients for reducing rosacea-associated erythema and papules. Studies show significant symptom reduction comparable to low-dose azelaic acid. Preferred in the morning routine under SPF.
+- Tones 4-7: Useful for general inflammation reduction, post-acne recovery, and general sensitive/reactive skin. The collagen-stimulating properties benefit all skin tones for long-term skin quality.
+- Tones 7-10: Valuable for shortening the post-inflammatory phase after acne. Less inflammatory time = less PIH. Also supports barrier health in eczema-prone skin, reducing flares that cause PIH.
+- Post-procedure (ALL tones): Centella is widely recommended by dermatologists for post-laser, post-peel, and post-extraction recovery. Accelerates the window of PIH risk.
+
+Interactions:
+- All common actives: Compatible. No known negative interactions.
+- Niacinamide: Synergistic anti-inflammatory stacking
+- Ceramides: Complementary — centella stimulates collagen synthesis, ceramides repair lipid barrier
+- Retinol: Centella on off-retinol nights or together can reduce retinol irritation
+
+Sensitization risk: Low. Contact dermatitis has been documented but is uncommon. Potential cross-reactivity with marigold/Asteraceae family plants.
+Pregnancy safety: Safe
+Photosensitivity: None
+Available in: Serums, toners, sheet masks, moisturizers, essences
+
+Key studies:
+- Bylka et al. (2014): Centella asiatica in dermatology — comprehensive review
+- Widgerow et al. (2000): Centella asiatica wound healing clinical study
+- Ratz-Łyko et al. (2016): K-beauty centella formulations and anti-inflammatory efficacy
+- Somboonwong et al. (2012): Centella asiatica and rosacea management

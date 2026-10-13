@@ -1,0 +1,61 @@
+Ingredient: Salicylic Acid (BHA)
+INCI name: Salicylic Acid
+Also known as: BHA (beta-hydroxy acid), 2-hydroxybenzoic acid
+
+What makes it a BHA:
+The hydroxyl group is in the beta position (one carbon away from the carboxyl group). This makes salicylic acid oil-soluble — unlike AHAs (water-soluble). Oil-solubility is the key: salicylic acid can penetrate through the sebum that fills pores and dissolve the keratin plugs (dead skin + sebum) causing blackheads, whiteheads, and clogged pores. AHAs exfoliate the surface; BHA exfoliates inside the follicle.
+
+Mechanism of action:
+1. Oil-soluble penetration into follicles → dissolves sebum + keratin debris (comedolytic)
+2. Desmolytic effect → breaks bonds between corneocytes → accelerates shedding of dead skin cells
+3. Anti-inflammatory: Salicylic acid is structurally related to aspirin (acetylsalicylic acid) → inhibits prostaglandin synthesis → reduces skin inflammation
+4. Mild antibacterial against C. acnes (acne-causing bacteria) at higher concentrations
+
+Effective concentrations:
+- 0.5%: Gentle exfoliation — appropriate for sensitive skin introduction, pregnancy-adjacent use discussions
+- 1%: Mid-range — effective for mild congestion, blackheads
+- 2% (OTC maximum): Full comedolytic effect — maximum allowed in OTC products by FDA
+- >2%: Requires prescription (peels: 20-30%)
+
+pH matters for activity:
+- Active (non-ionized) form is below pKa of 2.97
+- At pH 3.0-4.0: Full activity
+- Rinse-off products (cleansers): pH less important — limited contact time reduces depth of penetration and irritation
+- Leave-on products (toners, serums): pH critical — products at pH 3-4 are fully active
+
+Product format matters — CRITICAL:
+- Rinse-off (cleansers): Reduced contact time → gentler, less risk, appropriate for sensitive and deeper skin tones
+- Leave-on (toners, serums, pads): Maximum efficacy AND maximum irritation risk — introduce slowly
+
+Monk tone specific notes — CAUTION INGREDIENT:
+- Tones 1-4: Well-tolerated at 2% leave-on. Standard introduction: 2-3x per week, build up over 4-6 weeks. Highly effective for oily/acne-prone skin.
+- Tones 5-6: Introduce cautiously at leave-on 2%. Start 1-2x per week. Watch closely for signs of irritation (redness, burning). If any irritation, reduce frequency. Consider starting with 1% concentration.
+- Tones 7-10: HIGH PIH RISK. Salicylic acid irritation triggers post-inflammatory hyperpigmentation in deeper skin tones at a higher rate than lighter tones. Risk management:
+  (a) Start with rinse-off BHA (cleanser) only — provides benefit with lower irritation risk
+  (b) If moving to leave-on: start at 0.5-1%, 1x per week maximum
+  (c) Pair with niacinamide (PI inflammation management) on off-nights
+  (d) If any darkening at application sites → discontinue and switch to azelaic acid
+  (e) Mandatory SPF after any BHA use
+  (f) Many dermatologists recommend azelaic acid as the primary exfoliant for tones 8-10 due to superior safety profile
+
+Interactions:
+- Other exfoliants (AHAs, retinol): Do not combine same evening — additive irritation
+- Niacinamide: Safe combination — reduces BHA irritation
+- SPF: Required after any BHA use due to increased UV sensitivity
+- Aspirin allergy: Cross-reactivity is possible — patch test required
+
+Contraindications:
+- Pregnancy: FDA Category C at high concentrations/systemic use. Rinse-off OTC formulas at 2% are generally considered low risk — recommend consulting OB-GYN. Avoid leave-on at 2% during pregnancy.
+- Aspirin (salicylate) allergy: Potential cross-reactivity
+- Broken or irritated skin
+- Eczema-prone or rosacea-prone skin
+
+Sensitization risk: Moderate-high for leave-on at 2% in deeper skin tones
+Pregnancy safety: Caution — consult OB-GYN. Avoid leave-on 2% during pregnancy.
+Photosensitivity: Yes — wear SPF the morning after use
+Available in: Cleansers, toners, serums, spot treatments, pads
+
+Key studies:
+- Grimes (1999): Salicylic acid peels for PIH in darker skin tones (clinical trial)
+- Arif (2015): Salicylic acid review in acne treatment
+- Kaminsky (1999): BHA mechanism and clinical applications

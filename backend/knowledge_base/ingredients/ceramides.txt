@@ -1,0 +1,49 @@
+Ingredient: Ceramides
+INCI name: Ceramide NP, Ceramide AP, Ceramide EOP, Ceramide NS, Ceramide AS, Ceramide EOS (and others)
+Also known as: Ceramide 1, 2, 3, 4, 5, 6-II (older naming)
+
+What ceramides are:
+Ceramides are the dominant lipid class in the stratum corneum (outermost skin layer), comprising approximately 50% of its total lipid content. They are sphingolipids — a molecule consisting of sphingosine (long-chain amino alcohol), a fatty acid, and a head group. They form the "mortar" between the "bricks" of corneocytes (dead skin cells), creating a lamellar lipid matrix that controls:
+1. TEWL (transepidermal water loss) — the primary barrier function
+2. Pathogen exclusion — prevents microbial penetration
+3. Chemical exclusion — prevents irritants and allergens from penetrating
+4. Moisture retention — keeps skin hydrated
+
+Mechanism of action (topical):
+1. Replenish depleted ceramides in damaged or aging skin → restore barrier function
+2. Reduce TEWL → less moisture loss
+3. Reduce skin sensitivity and reactivity → improved tolerance for other actives
+4. Support healing of eczema, rosacea, and contact dermatitis
+
+Key ceramide types in skincare:
+- Ceramide NP (Ceramide 3): Most common in formulas; barrier repair
+- Ceramide AP (Ceramide 6-II): Skin renewal and barrier
+- Ceramide EOP (Ceramide 1): Long-chain ceramide; structural scaffold of the lamellar body
+- The combination of ceramides 1+3+6-II (as in CeraVe) is specifically chosen to mirror the natural skin ratio
+
+Effective concentrations:
+- No established minimum effective concentration — ceramides work as a system
+- Key is combining multiple ceramide types + cholesterol + fatty acids in a ratio that mirrors natural skin lipids (roughly 1:1:1 ceramide:cholesterol:fatty acid molar ratio)
+- CeraVe's "Triple Ceramide Complex" is the gold standard formulation approach
+
+Monk tone specific notes:
+- ALL tones: Ceramide depletion occurs in all skin types and tones. Eczema, rosacea, aging, and environmental stress all deplete ceramides.
+- Tones 7-10: Studies (including by Eleni Linos at UCSF) have documented that Black skin may have higher rates of ceramide depletion in eczema compared to lighter skin tones. Effective ceramide therapy is particularly important.
+- Tones 1-3: Rosacea-associated barrier disruption is primarily a ceramide and lipid barrier dysfunction — ceramide restoration is central to rosacea management.
+- Eczema across ALL tones: Ceramide replenishment is the foundational treatment for eczema. Use with colloidal oatmeal for maximum itch and barrier benefit.
+
+Interactions and combinations:
+- Ceramides + Cholesterol + Fatty Acids: The complete lipid trio for optimal barrier repair (cholesterol and fatty acids needed as cofactors)
+- Ceramides + Hyaluronic Acid: Excellent — HA handles humectant layer, ceramides handle occlusive/barrier layer
+- Ceramides + Niacinamide: Synergistic — niacinamide upregulates ceramide synthesis, topical ceramides supplement supply
+- No known negative interactions with any common actives
+
+Sensitization risk: Extremely low. Ceramides are endogenous — naturally produced by the skin.
+Pregnancy safety: Safe
+Photosensitivity: None
+Available in: Moisturizers (most concentrated), cleansers, serums, eye creams
+
+Key studies:
+- Elias & Feingold (2001): Ceramide role in stratum corneum barrier function
+- Meckfessel & Brandt (2014): CeraVe ceramide formulation and clinical outcomes
+- Lynde et al. (2010): Ceramide-containing moisturizers in atopic dermatitis management

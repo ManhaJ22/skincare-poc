@@ -1,16 +1,39 @@
-INGREDIENT: Niacinamide (nicotinamide, vitamin B3)
+Ingredient: Niacinamide (Vitamin B3)
+INCI name: Niacinamide
+Also known as: Nicotinamide, Vitamin B3
 
-WHAT IT DOES AT A SKIN LEVEL:
-- Barrier repair: increases synthesis of ceramides and other stratum corneum lipids and reduces transepidermal water loss.
-- Pigmentation: lowers the transfer of melanosomes (pigment packets) from melanocytes to surrounding keratinocytes, which fades dark spots, PIH, and uneven tone without killing or suppressing melanocytes.
-- Oil control: reduces sebum production, which visibly tightens the look of pores on oily skin.
-- Anti-inflammatory: reduces redness and inflammatory acne lesions. It is a precursor to NAD+, which supports cellular energy and DNA repair after UV exposure.
+Mechanism of action:
+1. Inhibits melanosome transfer from melanocytes to keratinocytes → reduces hyperpigmentation
+2. Upregulates ceramide, free fatty acid, and cholesterol synthesis → strengthens skin barrier
+3. Modulates inflammatory cytokines (TNF-alpha, IL-6) → anti-inflammatory effect
+4. Regulates sebum production → reduces pore appearance over time
+5. Antioxidant via NADH/NADPH pathway support
+6. Stimulates collagen synthesis → improves skin elasticity
 
-EFFECTIVE CONCENTRATION: 2-5% for barrier and brightening (most clinical data is at 4-5%). Up to 10% for oil control. Higher is not proportionally better and raises irritation risk.
+Effective concentrations:
+- 2-5%: Anti-inflammatory, barrier support, mild sebum regulation
+- 5-10%: Measurable hyperpigmentation reduction (8-12 week timeframe in clinical trials)
+- 10%: Maximum common OTC concentration — full spectrum of benefits, some users report transient flushing (rare)
+- >10%: Used in some clinical trials, diminishing returns and increased sensitization risk
 
-DEEPER SKIN TONES (Monk 6-10): one of the best first-line brighteners for deeper skin. It targets pigment transfer rather than melanin production, so it does not cause uneven lightening or a "halo" around spots. Its low irritation profile matters because irritation itself causes PIH on deeper tones.
+Monk tone specific notes:
+- Tones 1-4: Primary benefit is redness reduction (post-acne erythema, rosacea), pore minimizing, and barrier support
+- Tones 5-10: HIGHEST PRIORITY ingredient for hyperpigmentation and PIH. The melanosome transfer inhibition specifically targets the mechanism that creates dark marks. Combine with alpha arbutin and vitamin C for synergistic triple-mechanism brightening.
+- ALL tones: SPF + niacinamide is the single most evidence-supported daily routine for skin tone evenness
 
-PAIRS WELL WITH: hyaluronic acid, ceramides, retinol (niacinamide reduces retinoid irritation), salicylic acid, sunscreen, zinc, tranexamic acid.
-CONFLICTS / CAUTION: the old "niacinamide + vitamin C cancel each other" claim comes from outdated high-heat studies and is not a practical concern with modern formulas. Some people flush when they apply both at once; separating them AM/PM avoids this.
+Interactions and combinations:
+- Vitamin C: Previously claimed to form nicotinic acid (pro-flushing) — this is a myth at room temperature. Safe to layer.
+- Retinol: Synergistic — niacinamide reduces retinol irritation while both improve texture
+- AHAs/BHAs: Safe to combine, niacinamide reduces post-exfoliation irritation
+- No known negative interactions
 
-SENSITIZATION / OVERUSE RISKS: 10%+ can cause redness, itching, or a temporary flush in sensitive users. Layering several niacinamide products can push the total concentration too high. It can pill under silicone-heavy products.
+Sensitization risk: Low. True niacinamide allergy is extremely rare. Transient flushing at >5% is rare but possible — occurs because mass-produced niacinamide contains trace nicotinic acid impurities.
+
+Pregnancy safety: Safe
+Photosensitivity: None
+Available in: Serums, moisturizers, toners, cleansers, SPF
+
+Key studies:
+- Hakozaki et al. (2002): 5% niacinamide reduced hyperpigmentation significantly vs placebo in split-face trial
+- Levin & Momin (2010): Comprehensive review of niacinamide's multiple mechanisms in dermatology
+- Draelos et al. (2006): Niacinamide vs hydroquinone 4% for hyperpigmentation — comparable efficacy at 4%

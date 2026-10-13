@@ -1,0 +1,50 @@
+Ingredient: Benzoyl Peroxide
+INCI name: Benzoyl Peroxide
+Also known as: BPO, Benzoylperoxide
+
+Mechanism of action:
+1. Bactericidal: Releases free oxygen radicals that directly kill C. acnes (Propionibacterium acnes) and other acne-causing bacteria — disrupts bacterial cell membrane and inhibits protein synthesis
+2. Keratolytic: Mild peeling/exfoliation of follicular epithelium → opens clogged pores
+3. Comedolytic: Helps dissolve the keratin plug
+4. Does NOT cause antibiotic resistance (unlike topical antibiotics) — FDA recognizes BPO as preserving antibiotic effectiveness when combined with topical antibiotics
+
+Effective concentrations:
+- 2.5%: Effective against C. acnes with significantly less irritation than higher concentrations
+- 5%: Standard OTC concentration — most commonly recommended by dermatologists
+- 10%: Higher concentration, NOT significantly more effective for acne than 5%, but significantly more irritating
+- Dermatology consensus: Start with 2.5% or 5%, not 10%
+
+Forms:
+- Wash/cleanser: Rinse-off, reduced irritation, limited contact time — good for sensitive skin starting BPO
+- Spot treatment (gel, cream): Leave-on, more effective at targeted acne lesions
+- Face wash to overnight spot treatment: Increasing intensity options
+
+Monk tone specific notes — SIGNIFICANT CAUTION:
+- Tones 1-4: Effective acne treatment. Well-tolerated at 2.5-5%. Standard introduction: apply pea-sized amount to affected areas, 1-2 minutes contact time for wash, or leave-on spot treatment. Dryness and initial irritation expected and manageable.
+- Tones 5-6: Caution. BPO irritation risk is moderate. Start with 2.5% wash formula (rinse-off only). If skin tolerates, may try spot-treatment application limited to active pimples only — avoid applying to uninvolved skin. Do not use on entire face as preventive treatment.
+- Tones 7-10: HIGH PIH RISK. Benzoyl peroxide is one of the most common causes of PIH in deeper skin tones. The oxidative irritation mechanism that kills bacteria also triggers melanocyte stimulation. Many dermatologists who specialize in deeper skin tones (Taylor, Grimes, and others) recommend AGAINST benzoyl peroxide as a first-line acne treatment for tones 7-10. Alternatives: salicylic acid wash (rinse-off), azelaic acid, niacinamide serum, retinol (with caution). If BPO is the only option that has worked: use as a spot treatment only on active lesions, rinse-off wash only, never leave-on, 2.5% only, and pair with niacinamide on all other applications to manage PI inflammation.
+
+Important properties:
+- Bleaches fabric: BPO will stain/bleach towels, pillowcases, and clothing. Use white linens.
+- UV sensitivity: Increased photosensitivity — SPF mandatory
+- Oxidizes vitamin C: Do not layer with vitamin C — both lose efficacy
+
+Interactions:
+- Retinol: Oxidizes retinol → degrades both actives. Apply different times or different evenings.
+- Vitamin C: Mutual oxidation → both degraded. Apply AM (C) and PM (BPO) instead.
+- Topical antibiotics (clindamycin, erythromycin): Synergistic — BPO prevents resistance development; often combined in prescriptions (e.g., Benzaclin = BPO + clindamycin).
+- Niacinamide: Safe — and niacinamide partially offsets BPO-driven inflammation
+
+Contraindications / Allergy:
+- Benzoyl peroxide allergy: True contact allergy exists (red, itchy reaction within 24-48 hrs) — distinct from expected dryness. Approximately 1-2% of users. If allergic, switch to salicylic acid or azelaic acid.
+- NOT for open wounds, eczema flares, broken skin
+
+Sensitization risk: Moderate — true allergy ~1-2%, expected irritation/dryness very common
+Pregnancy safety: Category C — avoid during pregnancy if possible. Consult OB-GYN. Azelaic acid is the pregnancy-safe alternative.
+Photosensitivity: Yes — wear SPF after AM use
+Available in: Cleansers, gels, creams, spot treatments, combination Rx products
+
+Key studies:
+- Cunliffe & Burke (1982): BPO 2.5% vs 5% vs 10% — efficacy and tolerability comparison
+- Leyden et al. (1987): BPO mechanism and C. acnes clearance rates
+- Taylor (2002): BPO and PIH in darker skin tones — clinical guidance
