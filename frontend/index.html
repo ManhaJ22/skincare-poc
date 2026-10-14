@@ -26,6 +26,10 @@
     header {
       padding: 18px 24px;
       border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
     }
     header h1 { margin: 0; font-size: 20px; font-weight: 600; }
     header h1 span { color: var(--sage); }
@@ -80,6 +84,8 @@
     button:hover:not(:disabled) { background: var(--sage-dark); }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
     #analyze-btn { width: 100%; margin-top: 14px; }
+    button.secondary { background: #fff; color: var(--sage-dark); border: 1px solid var(--border); }
+    button.secondary:hover:not(:disabled) { background: var(--sage-light); }
 
     .profile-summary {
       margin-top: 14px;
@@ -193,6 +199,7 @@
 <body>
   <header>
     <h1><span>SkinSage</span> — AI Skincare Consultant (POC)</h1>
+    <button type="button" class="secondary" id="reset-btn" title="Cancel any pending request and clear the photo, profile and chat">Start over</button>
   </header>
 
   <main>
@@ -237,6 +244,7 @@
       history: [],
       busy: false,
       complete: false,
+      controller: null, // AbortController for the in-flight request, if any
     };
 
     const $ = (id) => document.getElementById(id);
@@ -302,6 +310,29 @@
       messages.scrollTop = messages.scrollHeight;
       return el;
     }
+
+    // --- Force reset: abort any pending request and return the page to its initial state ---
+    function resetSession() {
+      state.controller?.abort();
+      Object.assign(state, {
+        imageDataUrl: null,
+        skinProfile: null,
+        history: [],
+        busy: false,
+        complete: false,
+        controller: null,
+      });
+      fileInput.value = "";
+      $("dropzone").innerHTML = '<span id="drop-text">Click to upload a photo</span>';
+      $("profile-summary").innerHTML = "";
+      messages.innerHTML = '<div class="empty-chat" id="empty-chat">Upload a photo and click Analyze to start.</div>';
+      chatText.value = "";
+      $("cards").innerHTML = "";
+      $("recommendations").hidden = true;
+      updateControls();
+    }
+
+    $("reset-btn").addEventListener("click", resetSession);
 
     function updateControls() {
       const chatReady = state.skinProfile && state.skinProfile.monk_tone > 0 && !state.complete;
@@ -377,11 +408,12 @@
       $("recommendations").scrollIntoView({ behavior: "smooth" });
     }
 
-    async function postJSON(path, body) {
+    async function postJSON(path, body, signal) {
       const res = await fetch(`${API_BASE}${path}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
+        signal,
       });
       if (!res.ok) {
         const detail = await res.json().then((d) => d.detail).catch(() => res.statusText);
@@ -399,20 +431,25 @@
       state.complete = false;
       state.busy = true;
       updateControls();
+      const controller = (state.controller = new AbortController());
       const spinner = showSpinner("Analyzing your photo…");
       try {
-        const data = await postJSON("/analyze", { image_base64: state.imageDataUrl });
+        const data = await postJSON("/analyze", { image_base64: state.imageDataUrl }, controller.signal);
         spinner.remove();
         state.skinProfile = data.skin_profile;
         renderProfile(state.skinProfile);
         addMessage("assistant", data.opening_message);
         state.history.push({ role: "assistant", content: data.opening_message });
       } catch (err) {
+        if (controller.signal.aborted) return; // reset while waiting; page is already cleared
         spinner.remove();
         addMessage("error", `Couldn't analyze the photo: ${err.message}. Is the backend running on ${API_BASE}?`);
       } finally {
-        state.busy = false;
-        updateControls();
+        if (!controller.signal.aborted) {
+          state.controller = null;
+          state.busy = false;
+          updateControls();
+        }
       }
     });
 
@@ -425,13 +462,14 @@
       addMessage("user", text);
       state.busy = true;
       updateControls();
+      const controller = (state.controller = new AbortController());
       const spinner = showSpinner("SkinSage is thinking…");
       try {
         const data = await postJSON("/chat", {
           conversation_history: state.history,
           skin_profile: state.skinProfile,
           user_message: text,
-        });
+        }, controller.signal);
         spinner.remove();
         state.history.push({ role: "user", content: text }, { role: "assistant", content: data.assistant_response });
         state.skinProfile = data.updated_skin_profile;
@@ -442,12 +480,16 @@
           renderRecommendations(data.recommendations);
         }
       } catch (err) {
+        if (controller.signal.aborted) return; // reset while waiting; page is already cleared
         spinner.remove();
         addMessage("error", `Something went wrong: ${err.message}. Please try sending again.`);
         chatText.value = text;
       } finally {
-        state.busy = false;
-        updateControls();
+        if (!controller.signal.aborted) {
+          state.controller = null;
+          state.busy = false;
+          updateControls();
+        }
       }
     });
   </script>
