@@ -3,240 +3,643 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SkinSage — AI Skincare Consultant (POC)</title>
+  <title>Dermalis — AI Skincare Consultant (POC)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
+    /*
+      Design tokens. Named like a Tailwind/NativeWind theme so they port 1:1 to the
+      React Native app later (see docs/react-native-migration.md).
+    */
     :root {
-      --sage: #7A9E7E;
-      --sage-dark: #5F8263;
-      --sage-light: #EEF4EF;
-      --text: #1F2A22;
-      --muted: #6B776E;
-      --border: #E2E8E3;
-      --radius: 12px;
+      --sage-100: #E6EEE3;
+      --sage-300: #B5C9B1;
+      --sage-500: #7A9E7E;
+      --sage-700: #4F6B53;
+      --terracotta-300: #E9B4A2;
+      --terracotta-500: #C8664B;
+      --terracotta-700: #9A4A35;
+      --mustard-300: #EFD58F;
+      --mustard-500: #D9A441;
+      --navy-500: #3E5170;
+      --navy-700: #2B3A55;
+      --paper: #F6EFE3;
+      --paper-light: #FBF7F0;
+      --clay: #E8D9C4;
+      --ink: #2A2620;
+      --ink-muted: #6E655A;
+
+      --font-display: "Fraunces", Georgia, serif;
+      --font-body: "Nunito", -apple-system, "Segoe UI", sans-serif;
+      --font-hand: "Caveat", "Comic Sans MS", cursive;
+
+      /* Slightly uneven corners read as hand-cut paper rather than a UI kit. */
+      --radius-paper: 18px 24px 16px 22px / 22px 16px 24px 18px;
+      --radius-pill: 999px;
+      --shadow-paper: 3px 4px 0 rgba(42, 38, 32, 0.12);
+      --shadow-lift: 5px 7px 0 rgba(42, 38, 32, 0.14);
+      --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.16 0 0 0 0 0.15 0 0 0 0 0.12 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      background: #fff;
-      color: var(--text);
-      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--paper);
+      background-image: var(--grain);
+      color: var(--ink);
+      font-family: var(--font-body);
       font-size: 15px;
-      line-height: 1.5;
+      line-height: 1.55;
     }
+    h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing: -0.01em; }
+    .hand { font-family: var(--font-hand); }
+
+    /* Header */
     header {
-      padding: 18px 24px;
-      border-bottom: 1px solid var(--border);
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 22px 24px 8px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 12px;
     }
-    header h1 { margin: 0; font-size: 20px; font-weight: 600; }
-    header h1 span { color: var(--sage); }
+    .brand-mark { display: flex; align-items: center; gap: 10px; }
+    .brand-mark svg { flex: none; }
+    header h1 { margin: 0; font-size: 30px; color: var(--navy-700); line-height: 1; }
+    header .tagline { font-family: var(--font-hand); font-size: 20px; color: var(--terracotta-500); margin-left: 4px; }
+
     main {
-      max-width: 1100px;
+      max-width: 1240px;
       margin: 0 auto;
-      padding: 24px;
+      padding: 16px 24px 48px;
       display: grid;
-      grid-template-columns: 320px 1fr;
+      grid-template-columns: 290px minmax(0, 1fr) 250px;
       gap: 24px;
       align-items: start;
     }
+    #recommendations { max-width: 1240px; margin: 0 auto; padding: 0 24px 64px; }
+
     .panel {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      background: var(--paper-light);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-paper);
+      box-shadow: var(--shadow-paper);
       padding: 20px;
     }
-    h2 { margin: 0 0 12px; font-size: 16px; font-weight: 600; }
-    .hint { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
+    h2 { margin: 0 0 10px; font-size: 19px; color: var(--navy-700); }
+    h2 .num {
+      display: inline-grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      margin-right: 6px;
+      border-radius: 50% 46% 52% 48%;
+      background: var(--mustard-300);
+      font-size: 15px;
+      transform: rotate(-6deg);
+    }
+    .hint { color: var(--ink-muted); font-size: 13px; margin: 0 0 14px; }
 
     /* Upload panel */
     .dropzone {
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 6px;
       aspect-ratio: 1;
-      border: 2px dashed var(--border);
-      border-radius: var(--radius);
-      background: #FAFBFA;
+      border: 2px dashed var(--sage-500);
+      border-radius: var(--radius-paper);
+      background: var(--sage-100);
       cursor: pointer;
       overflow: hidden;
-      color: var(--muted);
+      color: var(--sage-700);
       text-align: center;
-      font-size: 14px;
-      transition: border-color 0.15s;
+      font-family: var(--font-hand);
+      font-size: 22px;
+      transition: border-color 0.15s, background 0.15s;
     }
-    .dropzone:hover { border-color: var(--sage); }
+    .dropzone:hover { border-color: var(--terracotta-500); background: #EEF2E9; }
     .dropzone img { width: 100%; height: 100%; object-fit: cover; }
     #file-input { display: none; }
 
     button {
       font: inherit;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 16px;
-      background: var(--sage);
-      color: #fff;
-      font-weight: 600;
+      font-weight: 700;
+      border: 2px solid var(--ink);
+      border-radius: 14px 18px 14px 16px;
+      padding: 9px 16px;
+      background: var(--terracotta-500);
+      color: var(--paper-light);
       cursor: pointer;
-      transition: background 0.15s;
+      box-shadow: 2px 3px 0 var(--ink);
+      transition: transform 0.12s, box-shadow 0.12s, background 0.15s;
     }
-    button:hover:not(:disabled) { background: var(--sage-dark); }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    button:hover:not(:disabled) { background: var(--terracotta-700); transform: translate(-1px, -1px); box-shadow: 3px 4px 0 var(--ink); }
+    button:active:not(:disabled) { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--ink); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
     #analyze-btn { width: 100%; margin-top: 14px; }
-    button.secondary { background: #fff; color: var(--sage-dark); border: 1px solid var(--border); }
-    button.secondary:hover:not(:disabled) { background: var(--sage-light); }
+    button.secondary { background: var(--paper-light); color: var(--navy-700); }
+    button.secondary:hover:not(:disabled) { background: var(--clay); }
 
     .profile-summary {
-      margin-top: 14px;
+      margin-top: 16px;
       font-size: 13px;
-      color: var(--muted);
+      color: var(--ink-muted);
     }
-    .profile-summary div { margin: 2px 0; }
-    .profile-summary strong { color: var(--text); font-weight: 500; }
+    .profile-summary:not(:empty) {
+      padding-top: 12px;
+      border-top: 2px dotted var(--sage-300);
+    }
+    .profile-summary div { margin: 3px 0; }
+    .profile-summary strong { color: var(--ink); font-weight: 700; }
 
     /* Chat panel */
-    .chat { display: flex; flex-direction: column; height: 520px; padding: 0; }
-    .chat h2 { padding: 16px 20px 0; }
+    .chat { display: flex; flex-direction: column; height: 560px; padding: 0; }
+    .chat h2 { padding: 18px 20px 0; }
     #messages {
       flex: 1;
       overflow-y: auto;
       padding: 12px 20px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
     .msg {
-      max-width: 80%;
+      max-width: 82%;
       padding: 10px 14px;
-      border-radius: 14px;
+      border-radius: 18px 20px 18px 6px;
       white-space: pre-wrap;
       word-wrap: break-word;
     }
-    .msg.assistant { background: var(--sage-light); align-self: flex-start; border-bottom-left-radius: 4px; }
-    .msg.user { background: var(--sage); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
-    .msg.error { background: #FDECEC; color: #9B2C2C; align-self: center; font-size: 13px; }
-    .empty-chat { color: var(--muted); text-align: center; margin: auto; font-size: 14px; }
+    .msg.assistant {
+      position: relative;
+      align-self: flex-start;
+      margin-left: 34px;
+      background: var(--sage-100);
+      border: 1.5px solid var(--sage-300);
+    }
+    /* Leaf avatar beside each assistant message. */
+    .msg.assistant::before {
+      content: "";
+      position: absolute;
+      left: -34px;
+      top: 2px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--sage-500) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FBF7F0' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M6 18c0-7 5-11 12-12-1 7-5 12-12 12z'/%3E%3Cpath d='M6 18l6-6'/%3E%3C/svg%3E") center / 16px no-repeat;
+    }
+    .msg.user {
+      align-self: flex-end;
+      background: var(--navy-700);
+      color: var(--paper-light);
+      border-radius: 20px 18px 6px 18px;
+    }
+    .msg.error { background: #F7DED5; color: var(--terracotta-700); align-self: center; font-size: 13px; border-radius: 12px; }
+    .empty-chat {
+      margin: auto;
+      text-align: center;
+      color: var(--ink-muted);
+      font-family: var(--font-hand);
+      font-size: 22px;
+      line-height: 1.2;
+    }
+    .empty-chat svg { display: block; margin: 0 auto 8px; }
 
     .chat-input {
       display: flex;
       gap: 8px;
       padding: 14px 20px;
-      border-top: 1px solid var(--border);
+      border-top: 2px dotted var(--sage-300);
     }
     #chat-text {
       flex: 1;
+      min-width: 0;
       font: inherit;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      padding: 10px 14px;
+      background: #fff;
+      border: 2px solid var(--clay);
+      border-radius: 14px 18px 14px 16px;
       outline: none;
     }
-    #chat-text:focus { border-color: var(--sage); }
+    #chat-text:focus { border-color: var(--sage-500); }
 
     /* Loading spinner */
     .spinner {
       width: 18px;
       height: 18px;
-      border: 2px solid var(--sage-light);
-      border-top-color: var(--sage);
+      border: 2.5px solid var(--sage-300);
+      border-top-color: var(--terracotta-500);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
-    .msg.loading { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+    .msg.loading { display: flex; align-items: center; gap: 8px; color: var(--ink-muted); }
     @keyframes spin { to { transform: rotate(360deg); } }
 
+    /* Progress sidebar */
+    .progress { position: sticky; top: 16px; background: var(--paper-light); }
+    .progress h2 { font-size: 18px; }
+    .bar {
+      height: 14px;
+      margin: 6px 0 6px;
+      background: var(--clay);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+    }
+    .bar span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: repeating-linear-gradient(-45deg, var(--sage-500) 0 8px, var(--sage-700) 8px 16px);
+      border-radius: var(--radius-pill);
+      transition: width 0.6s ease;
+    }
+    .eta { margin: 0 0 12px; font-family: var(--font-hand); font-size: 21px; color: var(--terracotta-500); line-height: 1.2; }
+    .checklist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+    .checklist li { display: flex; align-items: center; gap: 9px; font-size: 14px; }
+    .checklist .box {
+      flex: none;
+      display: grid;
+      place-items: center;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--ink);
+      border-radius: 5px 7px 5px 6px;
+      background: var(--paper-light);
+      font-size: 13px;
+      line-height: 1;
+      color: var(--paper-light);
+    }
+    .checklist li.done .box { background: var(--sage-500); }
+    .checklist li.done .label { color: var(--ink-muted); text-decoration: line-through; text-decoration-color: var(--sage-500); text-decoration-thickness: 2px; }
+    .checklist li.optional .box { border-style: dashed; border-color: var(--ink-muted); }
+    .checklist li.optional.done .box { background: var(--mustard-500); border-style: solid; border-color: var(--ink); }
+    .checklist li.current .label { font-weight: 700; color: var(--navy-700); }
+    .checklist li.current .box { background: var(--mustard-300); }
+    .checklist li.current.working .box::after {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--terracotta-500);
+      animation: pulse 1s ease-in-out infinite;
+    }
+    .checklist .tag { font-family: var(--font-hand); font-size: 16px; color: var(--ink-muted); margin-left: auto; }
+    @keyframes pulse { 50% { transform: scale(1.6); opacity: 0.5; } }
+    .scribble { margin: 14px 0 0; font-family: var(--font-hand); font-size: 18px; line-height: 1.2; color: var(--sage-700); }
+
     /* Recommendations */
-    #recommendations { margin-top: 24px; }
     #recommendations[hidden] { display: none; }
-    .disclaimer { color: var(--muted); font-size: 13px; margin: -6px 0 14px; }
-    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+    #recommendations > h2 { font-size: 24px; }
+    .disclaimer { color: var(--ink-muted); font-size: 13px; margin: -4px 0 16px; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 26px 20px; padding-top: 10px; }
     .card {
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px;
+      position: relative;
+      background: var(--paper-light);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-paper);
+      box-shadow: var(--shadow-paper);
+      padding: 20px 16px 14px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 7px;
+      transform: rotate(-0.6deg);
+      transition: transform 0.18s, box-shadow 0.18s;
     }
+    .card:nth-child(even) { transform: rotate(0.6deg); }
+    .card:hover { transform: rotate(0) translateY(-2px); box-shadow: var(--shadow-lift); }
+    /* Washi-tape strip pinning each card. */
+    .card::before {
+      content: "";
+      position: absolute;
+      top: -11px;
+      left: 50%;
+      width: 78px;
+      height: 20px;
+      transform: translateX(-50%) rotate(-3deg);
+      background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.25) 0 6px, transparent 6px 12px), var(--terracotta-300);
+      opacity: 0.9;
+      border-radius: 2px;
+    }
+    .card:nth-child(3n+2)::before { background-color: var(--mustard-300); transform: translateX(-50%) rotate(2deg); }
+    .card:nth-child(3n)::before { background-color: var(--sage-300); transform: translateX(-50%) rotate(-1deg); }
     .step {
       align-self: flex-start;
-      background: var(--sage-light);
-      color: var(--sage-dark);
-      font-size: 12px;
-      font-weight: 600;
+      color: var(--sage-700);
+      border: 1.5px dashed currentColor;
+      font-size: 11px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
-      padding: 2px 8px;
-      border-radius: 999px;
+      letter-spacing: 0.08em;
+      padding: 1px 8px;
+      border-radius: 4px;
+      transform: rotate(-2deg);
     }
-    .card .brand { color: var(--muted); font-size: 13px; }
-    .card h3 { margin: 0; font-size: 15px; font-weight: 600; }
+    /* Stamp color by step family. */
+    .step[data-step="cleanser"], .step[data-step="toner"] { color: var(--navy-500); }
+    .step[data-step="treatment"], .step[data-step="exfoliant"], .step[data-step="spot treatment"] { color: var(--terracotta-500); }
+    .step[data-step="spf"] { color: #B07F1F; }
+    .step[data-step="mask"], .step[data-step="eye cream"] { color: var(--navy-700); }
+    .card .brand { color: var(--ink-muted); font-size: 13px; }
+    .card h3 { margin: 0; font-size: 17px; line-height: 1.25; color: var(--navy-700); }
     .card .why { font-size: 14px; margin: 0; }
     .ingredients { display: flex; flex-wrap: wrap; gap: 4px; }
     .ingredients span {
       font-size: 12px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 1px 8px;
+      background: var(--sage-100);
+      border: 1px solid var(--sage-300);
+      border-radius: var(--radius-pill);
+      padding: 1px 9px;
     }
     .card a {
       margin-top: auto;
-      color: var(--sage-dark);
-      font-weight: 600;
+      color: var(--terracotta-700);
+      font-weight: 700;
       font-size: 14px;
       text-decoration: none;
     }
-    .card a:hover { text-decoration: underline; }
+    .card a:hover { text-decoration: underline wavy; }
+    .step-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .time { font-size: 12px; color: var(--ink-muted); font-weight: 600; }
+    .price {
+      align-self: flex-start;
+      font-family: var(--font-hand);
+      font-size: 20px;
+      line-height: 1;
+      color: var(--terracotta-700);
+    }
+    .card .why {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card .note { font-size: 13px; color: var(--ink-muted); font-family: var(--font-hand); font-size: 17px; line-height: 1.1; }
+    .card .swapped { color: var(--sage-700); }
+    .card .rating { font-size: 15px; color: var(--mustard-500); letter-spacing: 1px; }
+    .card-actions { display: flex; gap: 8px; margin-top: auto; padding-top: 4px; align-items: center; flex-wrap: wrap; }
+    .card-actions button { padding: 5px 12px; font-size: 13px; box-shadow: 1px 2px 0 var(--ink); }
+    .card-actions a { margin: 0 0 0 auto; font-size: 13px; }
 
+    /* Product type tabs */
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .tabs button {
+      background: var(--paper-light);
+      color: var(--ink);
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius-pill);
+      padding: 4px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: none;
+    }
+    .tabs button:hover:not(:disabled) { background: var(--clay); transform: none; box-shadow: none; }
+    .tabs button[aria-selected="true"] { background: var(--navy-700); color: var(--paper-light); }
+
+    /* Removed list */
+    .removed { margin-top: 22px; font-size: 14px; color: var(--ink-muted); }
+    .removed[hidden] { display: none; }
+    .removed summary { cursor: pointer; font-family: var(--font-hand); font-size: 20px; color: var(--navy-700); }
+    .removed ul { list-style: none; padding: 0; margin: 8px 0 0; }
+    .removed li { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+
+    button.danger { color: var(--terracotta-700); }
+    button.link, button.icon { border: none; box-shadow: none; padding: 0; }
+    button.link { background: none; color: var(--mustard-300); text-decoration: underline; }
+    button.link:hover:not(:disabled) { background: none; transform: none; box-shadow: none; }
+    button.icon { background: none; color: var(--ink-muted); font-size: 24px; line-height: 1; padding: 0 4px; }
+    button.icon:hover:not(:disabled) { background: none; color: var(--ink); transform: none; box-shadow: none; }
+
+    /* Product detail dialog */
+    dialog {
+      width: min(560px, calc(100vw - 32px));
+      max-height: calc(100vh - 48px);
+      background: var(--paper-light) var(--grain);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-paper);
+      box-shadow: var(--shadow-lift);
+      padding: 22px;
+      color: var(--ink);
+    }
+    dialog::backdrop { background: rgba(43, 58, 85, 0.4); }
+    dialog h3 { margin: 4px 0 2px; font-size: 22px; color: var(--navy-700); }
+    dialog h4 { margin: 16px 0 4px; font-family: var(--font-hand); font-size: 21px; font-weight: 700; color: var(--terracotta-500); }
+    dialog p { margin: 0; font-size: 14px; }
+    dialog ul { margin: 0; padding-left: 18px; font-size: 14px; }
+    dialog .brand { color: var(--ink-muted); font-size: 13px; margin-top: 6px; }
+    dialog .price { display: block; margin-top: 4px; }
+    .detail-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .stars { display: flex; gap: 2px; }
+    .stars button {
+      background: none;
+      border: none;
+      box-shadow: none;
+      color: var(--clay);
+      font-size: 28px;
+      padding: 0 2px;
+      line-height: 1;
+      -webkit-text-stroke: 1px var(--ink-muted);
+    }
+    .stars button.on { color: var(--mustard-500); }
+    .stars button:hover:not(:disabled) { background: none; color: var(--mustard-300); transform: none; box-shadow: none; }
+    #detail-note {
+      width: 100%;
+      margin-top: 8px;
+      font-family: var(--font-hand);
+      font-size: 20px;
+      padding: 6px 12px;
+      background: #fff repeating-linear-gradient(transparent 0 27px, var(--sage-100) 27px 28px);
+      border: 2px solid var(--clay);
+      border-radius: 10px;
+      resize: vertical;
+    }
+    #detail-note:focus { outline: none; border-color: var(--sage-500); }
+    .detail-actions { display: flex; align-items: center; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
+    .detail-actions a { color: var(--terracotta-700); font-weight: 700; font-size: 14px; text-decoration: none; }
+    .detail-actions .spacer { flex: 1; }
+
+    /* Undo toast */
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%) rotate(-0.5deg);
+      max-width: calc(100vw - 32px);
+      background: var(--navy-700);
+      color: var(--paper-light);
+      border: 2px solid var(--ink);
+      padding: 10px 16px;
+      border-radius: var(--radius-paper);
+      font-size: 14px;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      box-shadow: var(--shadow-lift);
+      z-index: 10;
+    }
+    .toast[hidden] { display: none; }
+
+    /* Border keeps the lightest Monk tones visible on the paper background. */
+    .swatch {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      margin: 0 6px;
+      border: 1.5px solid var(--ink);
+      border-radius: 50% 45% 50% 48%;
+      vertical-align: middle;
+    }
+
+    @media (max-width: 1080px) {
+      main { grid-template-columns: 270px minmax(0, 1fr); }
+      /* Progress moves above the chat as a slim sticky strip. */
+      .progress { grid-column: 1 / -1; order: -1; position: sticky; top: 0; z-index: 5; padding: 12px 16px; }
+      .progress h2, .progress .scribble { display: none; }
+      .checklist { flex-direction: row; flex-wrap: wrap; gap: 6px 14px; }
+      .checklist li { font-size: 13px; }
+      .checklist .tag { display: none; }
+    }
     @media (max-width: 760px) {
-      main { grid-template-columns: 1fr; padding: 16px; }
+      header { padding: 16px 16px 4px; }
+      header h1 { font-size: 26px; }
+      header .tagline { display: none; }
+      main { grid-template-columns: 1fr; padding: 12px 16px 24px; gap: 18px; }
+      #recommendations { padding: 0 16px 48px; }
       .dropzone { aspect-ratio: 4 / 3; }
-      .chat { height: 460px; }
+      .chat { height: 480px; }
+      .eta { font-size: 18px; margin-bottom: 8px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .card, .card:nth-child(even), .card:hover, .step, h2 .num, .toast { transform: none; }
+      .toast { transform: translateX(-50%); }
     }
   </style>
 </head>
 <body>
   <header>
-    <h1><span>SkinSage</span> — AI Skincare Consultant (POC)</h1>
+    <div class="brand-mark">
+      <svg width="44" height="44" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <path d="M24 44c11-6 17-16 15-30C27 13 15 20 12 34" fill="#B5C9B1" stroke="#2A2620" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M10 42c6-12 14-20 26-26" stroke="#2A2620" stroke-width="2" stroke-linecap="round"/>
+        <path d="M20 31l7 1M24 24l6 1M17 37l5 2" stroke="#4F6B53" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="38" cy="9" r="4.5" fill="#D9A441" stroke="#2A2620" stroke-width="1.6"/>
+      </svg>
+      <div>
+        <h1>Dermalis</h1>
+        <span class="tagline">your skin, thoughtfully</span>
+      </div>
+    </div>
     <button type="button" class="secondary" id="reset-btn" title="Cancel any pending request and clear the photo, profile and chat">Start over</button>
   </header>
 
   <main>
     <section class="panel">
-      <h2>1. Your photo</h2>
+      <h2><span class="num">1</span>Your photo</h2>
       <p class="hint">Bare skin, natural daylight, facing the camera. JPEG, PNG, WEBP or GIF.</p>
       <label class="dropzone" for="file-input" id="dropzone">
         <span id="drop-text">Click to upload a photo</span>
       </label>
       <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/gif">
-      <button id="analyze-btn" disabled>Analyze Skin</button>
+      <button id="analyze-btn" disabled>Analyze my skin</button>
       <div class="profile-summary" id="profile-summary"></div>
     </section>
 
-    <section>
-      <div class="panel chat">
-        <h2>2. Chat with SkinSage</h2>
-        <div id="messages">
-          <div class="empty-chat" id="empty-chat">Upload a photo and click Analyze to start.</div>
+    <section class="panel chat">
+      <h2><span class="num">2</span>Chat with Dermalis</h2>
+      <div id="messages">
+        <div class="empty-chat" id="empty-chat">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+            <path d="M32 58V30" stroke="#2A2620" stroke-width="2" stroke-linecap="round"/>
+            <path d="M32 38c-12 0-18-7-18-17 11 0 18 6 18 17z" fill="#B5C9B1" stroke="#2A2620" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M32 31c1-11 8-17 19-17 0 11-7 17-19 17z" fill="#E9B4A2" stroke="#2A2620" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M20 58h24" stroke="#C8664B" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          Upload a photo and click Analyze to start.
         </div>
-        <form class="chat-input" id="chat-form">
-          <input type="text" id="chat-text" placeholder="Type your answer…" autocomplete="off" disabled>
-          <button type="submit" id="send-btn" disabled>Send</button>
-        </form>
       </div>
-
-      <div id="recommendations" hidden>
-        <h2>3. Your recommended routine</h2>
-        <p class="disclaimer">Results may vary. Patch test new products first. This is not medical advice.</p>
-        <div class="cards" id="cards"></div>
-      </div>
+      <form class="chat-input" id="chat-form">
+        <input type="text" id="chat-text" placeholder="Type your answer…" autocomplete="off" disabled>
+        <button type="submit" id="send-btn" disabled>Send</button>
+      </form>
     </section>
+
+    <aside class="panel progress" id="progress" aria-label="Consultation progress">
+      <h2>Your consultation</h2>
+      <div class="bar" id="progress-bar" role="progressbar" aria-label="Consultation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <span id="progress-fill"></span>
+      </div>
+      <p class="eta" id="progress-eta">Upload a photo to begin</p>
+      <ol class="checklist" id="progress-list"></ol>
+      <p class="scribble" id="progress-tip"></p>
+    </aside>
   </main>
+
+  <!-- Outside <main> so the sticky progress sidebar never slides over the routine. -->
+  <section id="recommendations" hidden>
+    <h2><span class="num">3</span>Your routine</h2>
+    <p class="disclaimer">Results may vary. Patch test new products first. This is not medical advice.</p>
+    <div class="tabs" id="step-tabs" role="tablist" aria-label="Filter by product type"></div>
+    <div class="cards" id="cards"></div>
+    <details class="removed" id="removed" hidden>
+      <summary id="removed-summary"></summary>
+      <ul id="removed-list"></ul>
+    </details>
+  </section>
+
+  <dialog id="detail-dialog" aria-labelledby="detail-name">
+    <div class="detail-head">
+      <div>
+        <div class="step-row"><span class="step" id="detail-step"></span><span class="time" id="detail-time"></span></div>
+        <div class="brand" id="detail-brand"></div>
+        <h3 id="detail-name"></h3>
+        <div class="price" id="detail-price"></div>
+      </div>
+      <button type="button" class="icon" id="detail-close" aria-label="Close">×</button>
+    </div>
+    <h4>Why it suits you</h4>
+    <p id="detail-why"></p>
+    <h4>On your skin tone</h4>
+    <p id="detail-tone"></p>
+    <h4>Key ingredients</h4>
+    <div class="ingredients" id="detail-ingredients"></div>
+    <div id="detail-not-good-wrap">
+      <h4>Not ideal for</h4>
+      <ul id="detail-not-good"></ul>
+    </div>
+    <h4>Your rating</h4>
+    <div class="stars" id="detail-stars" role="radiogroup" aria-label="Rate this product"></div>
+    <textarea id="detail-note" rows="2" placeholder="Notes for yourself: how it felt, results…"></textarea>
+    <div class="detail-actions">
+      <a id="detail-link" target="_blank" rel="noopener noreferrer">View on Amazon →</a>
+      <span class="spacer"></span>
+      <button type="button" class="secondary danger" id="detail-remove">Remove from routine</button>
+      <button type="button" id="detail-keep">Keep</button>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" hidden>
+    <span id="toast-text"></span>
+    <button type="button" class="link" id="toast-undo">Undo</button>
+  </div>
 
   <script>
     const API_BASE = "http://localhost:8000";
     const MAX_IMAGE_SIDE = 1024;
+    // Official Monk Skin Tone Scale reference colors (skintone.google), index = tone.
+    const MONK_HEX = [null, "#f6ede4", "#f3e7db", "#f7ead0", "#eadaba", "#d7bd96",
+                      "#a07e56", "#825c43", "#604134", "#3a312a", "#292420"];
+    const RATINGS_KEY = "dermalis.ratings";
+    const LEGACY_RATINGS_KEY = "skinsage.ratings"; // pre-rename; read once so ratings carry over
+    const TOAST_MS = 6000;
+
+    // Rough timings for the progress estimate; tune as real latencies change.
+    const SECONDS_TO_ANALYZE_PHOTO = 15;
+    const SECONDS_PER_ANSWER = 20;
+    const SECONDS_TO_BUILD_ROUTINE = 25;
 
     const state = {
       imageDataUrl: null,
@@ -245,7 +648,28 @@
       busy: false,
       complete: false,
       controller: null, // AbortController for the in-flight request, if any
+      recs: [],             // every recommendation, primaries and alternatives, in routine order
+      removed: new Set(),   // ASINs the user removed
+      filter: "all",        // selected product-type tab
+      openAsin: null,       // product shown in the detail dialog
+      ratings: loadRatings(), // { asin: { stars, note } }, kept across sessions in this browser
     };
+
+    function loadRatings() {
+      try {
+        const saved = localStorage.getItem(RATINGS_KEY) ?? localStorage.getItem(LEGACY_RATINGS_KEY);
+        return JSON.parse(saved) || {};
+      } catch {
+        return {};
+      }
+    }
+    function saveRatings() {
+      try {
+        localStorage.setItem(RATINGS_KEY, JSON.stringify(state.ratings));
+      } catch {
+        // Storage unavailable (private mode etc.); ratings still work for this page load.
+      }
+    }
 
     const $ = (id) => document.getElementById(id);
     const fileInput = $("file-input");
@@ -253,6 +677,9 @@
     const chatText = $("chat-text");
     const sendBtn = $("send-btn");
     const messages = $("messages");
+    // Initial markup, restored by "Start over".
+    const EMPTY_DROPZONE = $("dropzone").innerHTML;
+    const EMPTY_CHAT = messages.innerHTML;
 
     // --- Image handling: downscale before upload to keep the payload small ---
     function loadResizedImage(file) {
@@ -321,13 +748,20 @@
         busy: false,
         complete: false,
         controller: null,
+        recs: [],
+        removed: new Set(),
+        filter: "all",
       });
+      closeDetail();
+      hideToast();
       fileInput.value = "";
-      $("dropzone").innerHTML = '<span id="drop-text">Click to upload a photo</span>';
+      $("dropzone").innerHTML = EMPTY_DROPZONE;
       $("profile-summary").innerHTML = "";
-      messages.innerHTML = '<div class="empty-chat" id="empty-chat">Upload a photo and click Analyze to start.</div>';
+      messages.innerHTML = EMPTY_CHAT;
       chatText.value = "";
       $("cards").innerHTML = "";
+      $("step-tabs").innerHTML = "";
+      $("removed").hidden = true;
       $("recommendations").hidden = true;
       updateControls();
     }
@@ -340,14 +774,84 @@
       chatText.disabled = state.busy || !chatReady;
       sendBtn.disabled = state.busy || !chatReady;
       if (!chatText.disabled) chatText.focus();
+      renderProgress();
+    }
+
+    // --- Progress sidebar: what Dermalis still needs, and roughly how long until the routine ---
+    const PROGRESS_STEPS = [
+      { label: "Photo analyzed", done: (p) => p?.monk_tone > 0 },
+      { label: "Main concerns", done: (p) => p?.confirmed_concerns.length > 0, answer: true },
+      { label: "Monthly budget", done: (p) => p?.budget_monthly != null, answer: true },
+      { label: "Fragrance preference", done: (p) => p?.fragrance_free != null, answer: true },
+      { label: "Sensitivities", done: (p) => p?.allergies.length > 0, optional: true },
+      { label: "Skin goals", done: (p) => p?.goals.length > 0, optional: true },
+      { label: "Routine built", done: () => state.complete },
+    ];
+
+    function formatEta(seconds) {
+      return seconds < 60 ? "under a minute left" : `about ${Math.round(seconds / 60)} min left`;
+    }
+
+    function renderProgress() {
+      const p = state.skinProfile;
+      const steps = PROGRESS_STEPS.map((step) => ({ ...step, isDone: Boolean(step.done(p)) }));
+      const required = steps.filter((s) => !s.optional);
+      const current = required.find((s) => !s.isDone);
+      const pct = Math.round((required.filter((s) => s.isDone).length / required.length) * 100);
+
+      $("progress-fill").style.width = `${pct}%`;
+      $("progress-bar").setAttribute("aria-valuenow", String(pct));
+
+      let eta;
+      if (state.complete) eta = "All done, enjoy your routine!";
+      else if (!state.imageDataUrl && !p) eta = "Upload a photo to begin";
+      else {
+        const photoLeft = steps[0].isDone ? 0 : SECONDS_TO_ANALYZE_PHOTO;
+        const answersLeft = steps.filter((s) => s.answer && !s.isDone).length;
+        const seconds = photoLeft + answersLeft * SECONDS_PER_ANSWER + SECONDS_TO_BUILD_ROUTINE;
+        eta = answersLeft === 0 && state.busy ? `Building your routine… (~${SECONDS_TO_BUILD_ROUTINE}s)` : formatEta(seconds);
+      }
+      $("progress-eta").textContent = eta;
+
+      const list = $("progress-list");
+      list.innerHTML = "";
+      for (const step of steps) {
+        const item = el("li");
+        item.classList.toggle("done", step.isDone);
+        item.classList.toggle("optional", Boolean(step.optional));
+        item.classList.toggle("current", step === current);
+        item.classList.toggle("working", step === current && state.busy);
+        const box = el("span", "box", step.isDone ? "✓" : "");
+        box.setAttribute("aria-hidden", "true");
+        item.append(box, el("span", "label", step.label));
+        if (step.optional) item.append(el("span", "tag", "nice to have"));
+        list.appendChild(item);
+      }
+
+      $("progress-tip").textContent = state.complete
+        ? "Tap Details on any product to rate it or jot a note."
+        : p
+          ? "Only the first few are needed. The extras just make it more personal."
+          : "After your photo, I'll ask a few quick questions.";
     }
 
     function renderProfile(p) {
       const box = $("profile-summary");
       box.innerHTML = "";
       if (!p || p.monk_tone === 0) return;
+
+      const hex = MONK_HEX[p.monk_tone];
+      const toneRow = document.createElement("div");
+      const toneLabel = document.createElement("strong");
+      toneLabel.textContent = "Monk tone: ";
+      const swatch = document.createElement("span");
+      swatch.className = "swatch";
+      swatch.style.background = hex;
+      swatch.title = "Monk Skin Tone Scale reference color, not a measurement of your photo";
+      toneRow.append(toneLabel, String(p.monk_tone), swatch, hex);
+      box.appendChild(toneRow);
+
       const rows = [
-        ["Monk tone", p.monk_tone],
         ["Skin type", p.skin_type],
         ["Observed", p.observed_concerns.join(", ")],
         ["Concerns", p.confirmed_concerns.join(", ")],
@@ -365,48 +869,240 @@
       }
     }
 
-    function renderRecommendations(recs) {
-      const cards = $("cards");
-      cards.innerHTML = "";
-      for (const rec of recs) {
-        const card = document.createElement("article");
-        card.className = "card";
+    // --- Recommendations: type tabs, cards, details, remove/swap/undo ---
+    const amazonUrl = (asin) => `https://www.amazon.com/dp/${encodeURIComponent(asin)}`;
+    const stepLabel = (step) => (step === "spf" ? "SPF" : step.replace(/\b\w/g, (c) => c.toUpperCase()));
+    const starText = (n) => "★".repeat(n) + "☆".repeat(5 - n);
+    const findRec = (asin) => state.recs.find((r) => r.amazon_asin === asin);
 
-        const step = document.createElement("span");
-        step.className = "step";
-        step.textContent = rec.routine_step;
+    function el(tag, className, text) {
+      const node = document.createElement(tag);
+      if (className) node.className = className;
+      if (text != null) node.textContent = text;
+      return node;
+    }
 
-        const brand = document.createElement("div");
-        brand.className = "brand";
-        brand.textContent = rec.brand;
-
-        const name = document.createElement("h3");
-        name.textContent = rec.product_name;
-
-        const why = document.createElement("p");
-        why.className = "why";
-        why.textContent = rec.why_recommended;
-
-        const ingredients = document.createElement("div");
-        ingredients.className = "ingredients";
-        for (const ing of rec.key_ingredients) {
-          const chip = document.createElement("span");
-          chip.textContent = ing;
-          ingredients.appendChild(chip);
-        }
-
-        const link = document.createElement("a");
-        link.href = `https://www.amazon.com/dp/${encodeURIComponent(rec.amazon_asin)}`;
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
-        link.textContent = "View on Amazon →";
-
-        card.append(step, brand, name, why, ingredients, link);
-        cards.appendChild(card);
+    // Steps in routine order (the API sends them sorted), each with its recs, primary first.
+    function stepGroups() {
+      const groups = new Map();
+      for (const rec of state.recs) {
+        if (!groups.has(rec.routine_step)) groups.set(rec.routine_step, []);
+        groups.get(rec.routine_step).push(rec);
       }
+      return groups;
+    }
+
+    // The product shown for each step: the best-ranked one the user hasn't removed.
+    function visibleRecs() {
+      const shown = [];
+      for (const [step, recs] of stepGroups()) {
+        const active = recs.filter((r) => !state.removed.has(r.amazon_asin));
+        if (active.length) shown.push({ step, rec: active[0], spare: active.length - 1 });
+      }
+      return shown;
+    }
+
+    function renderRecommendations(recs) {
+      state.recs = recs;
+      state.removed = new Set();
+      state.filter = "all";
+      renderRoutine();
       $("recommendations").hidden = false;
       $("recommendations").scrollIntoView({ behavior: "smooth" });
     }
+
+    function renderRoutine() {
+      const shown = visibleRecs();
+      if (state.filter !== "all" && !shown.some((s) => s.step === state.filter)) state.filter = "all";
+      renderTabs(shown);
+      const cards = $("cards");
+      cards.innerHTML = "";
+      for (const item of shown) {
+        if (state.filter === "all" || state.filter === item.step) cards.appendChild(buildCard(item));
+      }
+      if (!shown.length) cards.appendChild(el("p", "hint", "You've removed everything. Restore products from the list below."));
+      renderRemoved();
+    }
+
+    function renderTabs(shown) {
+      const tabs = $("step-tabs");
+      tabs.innerHTML = "";
+      const options = [["all", `All (${shown.length})`], ...shown.map((s) => [s.step, stepLabel(s.step)])];
+      for (const [value, label] of options) {
+        const tab = el("button", "", label);
+        tab.type = "button";
+        tab.setAttribute("role", "tab");
+        tab.setAttribute("aria-selected", String(state.filter === value));
+        tab.addEventListener("click", () => {
+          state.filter = value;
+          renderRoutine();
+        });
+        tabs.appendChild(tab);
+      }
+    }
+
+    function buildCard({ step, rec, spare }) {
+      const card = el("article", "card");
+
+      const stepRow = el("div", "step-row");
+      const stamp = el("span", "step", stepLabel(step));
+      stamp.dataset.step = step;
+      stepRow.append(stamp);
+      if (rec.routine_time) stepRow.append(el("span", "time", rec.routine_time));
+      card.append(stepRow);
+
+      if (rec.is_alternative) card.append(el("div", "note swapped", "Swapped in"));
+      card.append(el("div", "brand", rec.brand), el("h3", "", rec.product_name));
+      if (rec.price) card.append(el("div", "price", rec.price));
+      card.append(el("p", "why", rec.why_recommended));
+
+      const rating = state.ratings[rec.amazon_asin];
+      if (rating?.stars) card.append(el("div", "rating", starText(rating.stars)));
+      if (spare) card.append(el("div", "note", `${spare} alternative${spare > 1 ? "s" : ""} if you remove this`));
+
+      const actions = el("div", "card-actions");
+      const details = el("button", "secondary", "Details");
+      details.type = "button";
+      details.addEventListener("click", () => openDetail(rec.amazon_asin));
+      const remove = el("button", "secondary danger", "Remove");
+      remove.type = "button";
+      remove.addEventListener("click", () => removeRec(rec.amazon_asin));
+      const link = el("a", "", "Amazon →");
+      link.href = amazonUrl(rec.amazon_asin);
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      actions.append(details, remove, link);
+      card.append(actions);
+      return card;
+    }
+
+    function renderRemoved() {
+      const removed = state.recs.filter((r) => state.removed.has(r.amazon_asin));
+      $("removed").hidden = !removed.length;
+      $("removed-summary").textContent = `Removed (${removed.length})`;
+      const list = $("removed-list");
+      list.innerHTML = "";
+      for (const rec of removed) {
+        const item = el("li");
+        const restore = el("button", "secondary", "Restore");
+        restore.type = "button";
+        restore.style.padding = "4px 10px";
+        restore.addEventListener("click", () => restoreRec(rec.amazon_asin));
+        item.append(restore, `${stepLabel(rec.routine_step)}: ${rec.brand} ${rec.product_name}`);
+        list.appendChild(item);
+      }
+    }
+
+    function removeRec(asin) {
+      const rec = findRec(asin);
+      if (!rec) return;
+      state.removed.add(asin);
+      closeDetail();
+      renderRoutine();
+      const replacement = visibleRecs().find((s) => s.step === rec.routine_step)?.rec;
+      showToast(
+        replacement
+          ? `Removed ${rec.product_name}. Swapped in ${replacement.brand} ${replacement.product_name}.`
+          : `Removed ${rec.product_name}.`,
+        () => restoreRec(asin),
+      );
+    }
+
+    function restoreRec(asin) {
+      state.removed.delete(asin);
+      hideToast();
+      renderRoutine();
+    }
+
+    // --- Undo toast ---
+    let toastTimer = null;
+    let toastUndo = null;
+    function showToast(text, onUndo) {
+      $("toast-text").textContent = text;
+      toastUndo = onUndo;
+      $("toast").hidden = false;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(hideToast, TOAST_MS);
+    }
+    function hideToast() {
+      clearTimeout(toastTimer);
+      toastUndo = null;
+      $("toast").hidden = true;
+    }
+    $("toast-undo").addEventListener("click", () => toastUndo?.());
+
+    // --- Detail dialog with rating ---
+    const dialog = $("detail-dialog");
+
+    function openDetail(asin) {
+      const rec = findRec(asin);
+      if (!rec) return;
+      state.openAsin = asin;
+      $("detail-step").textContent = stepLabel(rec.routine_step);
+      $("detail-step").dataset.step = rec.routine_step;
+      $("detail-time").textContent = rec.routine_time || "";
+      $("detail-brand").textContent = rec.brand;
+      $("detail-name").textContent = rec.product_name;
+      $("detail-price").textContent = rec.price || "";
+      $("detail-why").textContent = rec.why_recommended;
+      $("detail-tone").textContent = rec.tone_note || "No tone-specific notes for this product.";
+      $("detail-link").href = amazonUrl(asin);
+
+      const ingredients = $("detail-ingredients");
+      ingredients.innerHTML = "";
+      for (const ing of rec.key_ingredients) ingredients.appendChild(el("span", "", ing));
+
+      const notGood = rec.not_good_for || [];
+      const list = $("detail-not-good");
+      list.innerHTML = "";
+      for (const item of notGood) list.appendChild(el("li", "", item));
+      $("detail-not-good-wrap").hidden = !notGood.length;
+
+      $("detail-note").value = state.ratings[asin]?.note || "";
+      renderStars();
+      if (!dialog.open) dialog.showModal();
+    }
+
+    function renderStars() {
+      const current = state.ratings[state.openAsin]?.stars || 0;
+      const stars = $("detail-stars");
+      stars.innerHTML = "";
+      for (let n = 1; n <= 5; n++) {
+        const star = el("button", n <= current ? "on" : "", "★");
+        star.type = "button";
+        star.setAttribute("role", "radio");
+        star.setAttribute("aria-checked", String(n === current));
+        star.setAttribute("aria-label", `${n} star${n > 1 ? "s" : ""}`);
+        // Clicking the current rating again clears it.
+        star.addEventListener("click", () => setRating({ stars: n === current ? 0 : n }));
+        stars.appendChild(star);
+      }
+    }
+
+    function setRating(patch) {
+      const asin = state.openAsin;
+      if (!asin) return;
+      const next = { stars: 0, note: "", ...state.ratings[asin], ...patch };
+      if (!next.stars && !next.note) delete state.ratings[asin];
+      else state.ratings[asin] = next;
+      saveRatings();
+      renderStars();
+      renderRoutine();
+    }
+
+    function closeDetail() {
+      if (dialog.open) dialog.close();
+    }
+
+    $("detail-note").addEventListener("input", (e) => setRating({ note: e.target.value.trim() }));
+    $("detail-close").addEventListener("click", closeDetail);
+    $("detail-keep").addEventListener("click", closeDetail);
+    $("detail-remove").addEventListener("click", () => removeRec(state.openAsin));
+    dialog.addEventListener("close", () => (state.openAsin = null));
+    // A click on the backdrop (the dialog element itself, outside its content) closes it.
+    dialog.addEventListener("click", (e) => {
+      if (e.target === dialog) closeDetail();
+    });
 
     async function postJSON(path, body, signal) {
       const res = await fetch(`${API_BASE}${path}`, {
@@ -463,7 +1159,7 @@
       state.busy = true;
       updateControls();
       const controller = (state.controller = new AbortController());
-      const spinner = showSpinner("SkinSage is thinking…");
+      const spinner = showSpinner("Dermalis is thinking…");
       try {
         const data = await postJSON("/chat", {
           conversation_history: state.history,
@@ -492,6 +1188,8 @@
         }
       }
     });
+
+    renderProgress();
   </script>
 </body>
 </html>

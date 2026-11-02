@@ -36,6 +36,12 @@ class RecommendationResponse(BaseModel):
     routine_step: str
     why_recommended: str
     key_ingredients: list[str]
+    price: str = ""  # Filled by code from the KB, not the model.
+    routine_time: str = ""
+    tone_note: str = ""
+    not_good_for: list[str] = Field(default_factory=list)
+    # Alternatives are hidden until the user removes the primary pick for that step.
+    is_alternative: bool = False
 
 
 class AnalysisResponse(BaseModel):

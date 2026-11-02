@@ -11,8 +11,8 @@ from openai import OpenAIError
 from models.schemas import AnalysisRequest, AnalysisResponse, ChatRequest, ChatResponse, SkinProfile
 from services import conversation_service, rag_service, vision_service
 
-# Number of product docs handed to recommend(); the KB is small, so give it every candidate.
-RECOMMEND_CANDIDATES = 5
+# Products per routine step: one primary pick plus alternatives the user can swap in.
+CANDIDATES_PER_STEP = 3
 
 
 @asynccontextmanager
@@ -22,7 +22,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="SkinSage POC", lifespan=lifespan)
+app = FastAPI(title="Dermalis POC", lifespan=lifespan)
 
 # POC only: allow every origin so frontend/index.html works from file://.
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
@@ -34,6 +34,14 @@ def build_opening_message(profile: SkinProfile) -> str:
             "I couldn't get a clear enough look at your skin from that photo. "
             "Could you upload another one in natural daylight, facing the camera, without filters?"
         )
+    try:
+        return conversation_service.get_opening_message(profile) or _fallback_opening(profile)
+    except OpenAIError:
+        # The photo analysis already succeeded; don't fail the request over the greeting.
+        return _fallback_opening(profile)
+
+
+def _fallback_opening(profile: SkinProfile) -> str:
     observations = []
     if profile.observed_concerns:
         observations.append("some " + ", ".join(profile.observed_concerns))
@@ -69,10 +77,8 @@ def chat(request: ChatRequest):
         )
         recommendations = []
         if is_ready:
-            product_docs = rag_service.retrieve_relevant_products(
-                profile, top_k=RECOMMEND_CANDIDATES, doc_type="product"
-            )
-            recommendations = conversation_service.recommend(profile, product_docs)
+            candidates = rag_service.retrieve_routine_candidates(profile, per_step=CANDIDATES_PER_STEP)
+            recommendations = conversation_service.recommend(profile, candidates)
     except OpenAIError as e:
         raise HTTPException(status_code=502, detail=f"Chat failed: {e}")
 
