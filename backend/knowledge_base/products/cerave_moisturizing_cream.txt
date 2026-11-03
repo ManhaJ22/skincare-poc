@@ -4,6 +4,9 @@ ASIN: B00TTD9BRC
 Price: ~$19
 Routine step: Moisturizer
 Routine time: Morning and evening
+Amount: a nickel-sized amount for the face
+Frequency: twice daily
+How to use: Smooth over face and neck after serums. In the morning, let it settle a minute before sunscreen.
 Key ingredients: Ceramides (1, 3, 6-II), Hyaluronic Acid, Petrolatum
 Fragrance free: Yes
 Cruelty free: No

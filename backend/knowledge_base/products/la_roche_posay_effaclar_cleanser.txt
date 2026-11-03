@@ -1,9 +1,12 @@
 Product: La Roche-Posay Effaclar Purifying Foaming Gel Cleanser
 Brand: La Roche-Posay
-ASIN: B00BLZUVKA
-Price: ~$22
+ASIN: B002P3L99G
+Price: ~$19
 Routine step: Cleanser
 Routine time: Morning and evening
+Amount: a nickel-sized amount
+Frequency: twice daily
+How to use: Lather with water and massage onto damp skin for 30 seconds, then rinse well and pat dry.
 Key ingredients: Zinc Pidolate, Niacinamide, Thermal Spring Water
 Fragrance free: Yes
 Cruelty free: No

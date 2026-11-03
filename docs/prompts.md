@@ -19,3 +19,24 @@ make this on React Native, what is something that will
 be compatible with that, make it personal/crafty and artistic 
 rather than just a simple web app while keeping the 
 theme of earthy colors such as sage, terracotta, mustard, navy etc. 
+
+---------------------------------------------------------
+
+ The budget doesn't really have any weightage on anything. You should use
+  the budget to calculate and keep the range +/- $10 for the total routine.
+  Is the calculation currently being used for each individual product or the
+  whole routine? We should tell them an estimate of usually how much a whole
+  routine costs to give them an idea. Also, tell them that if they are over
+  budget, we can recalculate to keep the most important products to stay
+  within budget while also getting the best out of their routine.
+
+---------------------------------------------------------
+
+   Also allow the user to go back up and ask more questions even after seeing the full routine. Things like "What does niacinimide do?" it should be able to answer, or "How long does this product usually last?". It should allow a solid back and forth without it feeling like a one and done
+
+---------------------------------------------------------
+
+I also want to have an option of showing a bar on the side when the user has added or selected a product after review including how much to use (a couple drops, pea-sized amount), along with short instructions and when in the routine to use it. 
+
+-------------------------------------------------------------
+For each product card, return only: brand name, product name, price, and a list of 3 key ingredients as short tags (1-3 words each). Do not include any prose description — all explanatory text belongs in the Details view, not the card. Keep ingredient tags concise: “Niacinamide”, “Ceramides”, “SPF 30” not “Contains niacinamide for brightening”.

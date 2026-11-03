@@ -1,9 +1,12 @@
 Product: Cetaphil Gentle Skin Cleanser
 Brand: Cetaphil
-ASIN: B07T78ZBT6
-Price: ~$14
+ASIN: B099N3NM61
+Price: ~$13
 Routine step: Cleanser
 Routine time: Morning and evening
+Amount: a nickel-sized amount
+Frequency: twice daily
+How to use: Massage onto damp skin, then rinse with lukewarm water, or wipe off with a soft cloth if your skin is very dry. Pat dry gently.
 Key ingredients: Niacinamide, Panthenol (Vitamin B5), Glycerin
 Fragrance free: Yes
 Cruelty free: No

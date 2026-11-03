@@ -22,10 +22,12 @@ Return ONLY a JSON object matching this schema, with every other field left at i
   "observed_concerns": [<strings>],
   "skin_type": "<string>",
   "confirmed_concerns": [],
-  "allergies": [],
+  "allergies": null,
   "budget_monthly": null,
   "goals": [],
-  "fragrance_free": null
+  "fragrance_free": null,
+  "products_liked": null,
+  "products_disliked": null
 }"""
 
 _client: OpenAI | None = None

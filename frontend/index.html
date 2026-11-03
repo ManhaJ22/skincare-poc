@@ -225,6 +225,26 @@
       outline: none;
     }
     #chat-text:focus { border-color: var(--sage-500); }
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 10px 20px 0;
+      border-top: 2px dotted var(--sage-300);
+    }
+    .suggestions[hidden] { display: none; }
+    .suggestions + .chat-input { border-top: none; }
+    .suggestions button {
+      background: var(--sage-100);
+      color: var(--sage-700);
+      border: 1.5px dashed var(--sage-500);
+      border-radius: var(--radius-pill);
+      box-shadow: none;
+      padding: 3px 12px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .suggestions button:hover:not(:disabled) { background: var(--sage-300); color: var(--ink); transform: none; box-shadow: none; }
 
     /* Loading spinner */
     .spinner {
@@ -345,7 +365,6 @@
     .step[data-step="mask"], .step[data-step="eye cream"] { color: var(--navy-700); }
     .card .brand { color: var(--ink-muted); font-size: 13px; }
     .card h3 { margin: 0; font-size: 17px; line-height: 1.25; color: var(--navy-700); }
-    .card .why { font-size: 14px; margin: 0; }
     .ingredients { display: flex; flex-wrap: wrap; gap: 4px; }
     .ingredients span {
       font-size: 12px;
@@ -371,18 +390,85 @@
       line-height: 1;
       color: var(--terracotta-700);
     }
-    .card .why {
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .card .note { font-size: 13px; color: var(--ink-muted); font-family: var(--font-hand); font-size: 17px; line-height: 1.1; }
-    .card .swapped { color: var(--sage-700); }
-    .card .rating { font-size: 15px; color: var(--mustard-500); letter-spacing: 1px; }
+    .card .ingredients { margin-top: 2px; }
+    .card-x { position: absolute; top: 8px; right: 10px; font-size: 22px; }
     .card-actions { display: flex; gap: 8px; margin-top: auto; padding-top: 4px; align-items: center; flex-wrap: wrap; }
     .card-actions button { padding: 5px 12px; font-size: 13px; box-shadow: 1px 2px 0 var(--ink); }
     .card-actions a { margin: 0 0 0 auto; font-size: 13px; }
+
+    /* Budget box */
+    .budget {
+      margin: 0 0 20px;
+      padding: 16px 18px;
+      background: var(--paper-light);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-paper);
+      box-shadow: var(--shadow-paper);
+      max-width: 720px;
+    }
+    .budget[hidden] { display: none; }
+    .budget-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; }
+    .budget-total { font-family: var(--font-display); font-size: 30px; font-weight: 700; color: var(--navy-700); line-height: 1; }
+    .budget-label { color: var(--ink-muted); font-size: 14px; }
+    .budget-status {
+      margin-left: auto;
+      font-family: var(--font-hand);
+      font-size: 21px;
+      line-height: 1;
+      padding: 2px 10px;
+      border-radius: var(--radius-pill);
+      transform: rotate(-2deg);
+    }
+    .budget-status:empty { display: none; }
+    .budget[data-status="within"] .budget-status { background: var(--sage-100); color: var(--sage-700); }
+    .budget[data-status="under"] .budget-status { background: var(--mustard-300); color: var(--ink); }
+    .budget[data-status="over"] .budget-status { background: var(--terracotta-300); color: var(--terracotta-700); }
+    .budget-meter {
+      position: relative;
+      height: 12px;
+      margin: 14px 0 10px;
+      background: var(--clay);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-pill);
+    }
+    .budget-band {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(-45deg, var(--sage-300) 0 6px, var(--sage-500) 6px 12px);
+      border-left: 2px solid var(--ink);
+      border-right: 2px solid var(--ink);
+    }
+    .budget-band[hidden] { display: none; }
+    .budget-pin {
+      position: absolute;
+      top: -8px;
+      width: 4px;
+      height: 24px;
+      margin-left: -2px;
+      background: var(--navy-700);
+      border-radius: 2px;
+      transition: left 0.4s ease;
+    }
+    .budget[data-status="over"] .budget-pin { background: var(--terracotta-500); }
+    .budget p { margin: 6px 0 0; font-size: 14px; }
+    .budget-typical { font-family: var(--font-hand); font-size: 19px !important; color: var(--sage-700); line-height: 1.2; }
+    .budget-leftout { color: var(--ink-muted); }
+    .budget-over { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; color: var(--terracotta-700); font-weight: 600; }
+    .budget-over[hidden] { display: none; }
+    .budget-over button { padding: 5px 12px; font-size: 13px; }
+    .budget-form { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 10px; margin-top: 12px; padding-top: 10px; border-top: 2px dotted var(--sage-300); font-size: 14px; }
+    .budget-input-wrap { display: inline-flex; align-items: center; gap: 2px; font-weight: 700; }
+    #budget-input {
+      width: 86px;
+      font: inherit;
+      padding: 5px 8px;
+      background: #fff;
+      border: 2px solid var(--clay);
+      border-radius: 10px 12px 10px 11px;
+    }
+    #budget-input:focus { outline: none; border-color: var(--sage-500); }
+    .budget-form button { padding: 5px 12px; font-size: 13px; }
 
     /* Product type tabs */
     .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
@@ -431,6 +517,7 @@
     dialog ul { margin: 0; padding-left: 18px; font-size: 14px; }
     dialog .brand { color: var(--ink-muted); font-size: 13px; margin-top: 6px; }
     dialog .price { display: block; margin-top: 4px; }
+    dialog .status { margin-top: 6px; font-family: var(--font-hand); font-size: 18px; line-height: 1.1; color: var(--sage-700); }
     .detail-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
     .stars { display: flex; gap: 2px; }
     .stars button {
@@ -482,6 +569,113 @@
     }
     .toast[hidden] { display: none; }
 
+    /* Products the user added */
+    .card.added { outline: 2.5px dashed var(--sage-500); outline-offset: 5px; }
+    .card-actions button.added { background: var(--sage-100); color: var(--sage-700); border-color: var(--sage-700); }
+    .card-actions button.added:hover:not(:disabled) { background: var(--sage-300); }
+
+    /* "How to use" drawer: slides in from the right, a bottom sheet on phones. Not modal. */
+    .usage-tab {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--navy-700);
+      color: var(--paper-light);
+      border-radius: var(--radius-pill);
+      box-shadow: var(--shadow-lift);
+    }
+    .usage-tab[hidden] { display: none; }
+    .usage-tab:hover:not(:disabled) { background: var(--navy-500); }
+    .usage-tab .count {
+      background: var(--mustard-300);
+      color: var(--ink);
+      border-radius: var(--radius-pill);
+      padding: 0 7px;
+      font-size: 13px;
+    }
+    .usage-panel {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      bottom: 16px;
+      width: min(380px, calc(100vw - 32px));
+      z-index: 9;
+      overflow-y: auto;
+      background-color: var(--paper-light);
+      background-image: var(--grain);
+      transform: translateX(calc(100% + 32px));
+      visibility: hidden;
+      transition: transform 0.25s ease, visibility 0s 0.25s;
+    }
+    .usage-panel.open { transform: none; visibility: visible; transition: transform 0.25s ease; }
+    .usage-head { display: flex; align-items: center; justify-content: space-between; }
+    .usage-head h2 { margin: 0; }
+    .usage-panel .scribble { margin: 2px 0 14px; }
+    .usage-section {
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-paper);
+      padding: 12px 14px 6px;
+      margin-bottom: 16px;
+    }
+    .usage-section h3 { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font-size: 18px; }
+    .usage-section h3 small { font-family: var(--font-hand); font-size: 18px; font-weight: 500; opacity: 0.8; }
+    .usage-section ol, .usage-section ul { list-style: none; margin: 0; padding: 0; }
+    .usage-item { display: grid; grid-template-columns: 26px 1fr; gap: 10px; padding: 10px 0; border-top: 1.5px dashed currentColor; }
+    .usage-item:first-child { border-top: none; padding-top: 2px; }
+    .usage-num {
+      display: grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      border: 1.5px solid currentColor;
+      border-radius: 50% 46% 52% 48%;
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .usage-name { font-size: 14px; line-height: 1.3; margin: 3px 0 5px; }
+    .usage-name b { display: block; font-size: 12px; font-weight: 600; opacity: 0.75; }
+    .usage-meta { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; margin-bottom: 4px; }
+    .usage-amount {
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--mustard-300);
+      color: var(--ink);
+      border: 1px solid var(--ink);
+      border-radius: var(--radius-pill);
+      padding: 1px 9px;
+    }
+    .usage-freq { font-family: var(--font-hand); font-size: 17px; line-height: 1.1; }
+    .usage-how { margin: 0; font-size: 13px; line-height: 1.45; }
+    .usage-empty { color: var(--ink-muted); font-size: 14px; }
+
+    /* Daytime: warm sunlit paper. */
+    .usage-section.day {
+      color: var(--ink);
+      background: linear-gradient(160deg, #FBE9B7 0%, var(--paper-light) 70%);
+    }
+    .usage-section.day h3 { color: #8A6416; }
+    .usage-section.day .usage-item { border-top-color: rgba(176, 127, 31, 0.45); }
+    /* Nighttime: navy sky with a scatter of stars. */
+    .usage-section.night {
+      color: var(--paper-light);
+      background:
+        radial-gradient(1.5px 1.5px at 20% 18%, var(--mustard-300) 50%, transparent 51%),
+        radial-gradient(1px 1px at 72% 10%, var(--paper-light) 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 88% 46%, var(--paper-light) 50%, transparent 51%),
+        radial-gradient(1px 1px at 40% 64%, var(--mustard-300) 50%, transparent 51%),
+        radial-gradient(1px 1px at 12% 86%, var(--paper-light) 50%, transparent 51%),
+        linear-gradient(170deg, var(--navy-700) 0%, #1F2A40 100%);
+    }
+    .usage-section.night h3 { color: var(--mustard-300); }
+    .usage-section.night .step { color: var(--sage-300); }
+    .usage-section.night .usage-item { border-top-color: rgba(251, 247, 240, 0.25); }
+    .usage-section.extra { color: var(--ink); background: var(--sage-100); }
+    .usage-section.extra h3 { color: var(--sage-700); }
+
     /* Border keeps the lightest Monk tones visible on the paper background. */
     .swatch {
       display: inline-block;
@@ -511,6 +705,19 @@
       .dropzone { aspect-ratio: 4 / 3; }
       .chat { height: 480px; }
       .eta { font-size: 18px; margin-bottom: 8px; }
+      /* The drawer becomes a bottom sheet. */
+      .usage-tab { right: 16px; bottom: 16px; }
+      .usage-panel {
+        top: auto;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: auto;
+        max-height: 78vh;
+        border-bottom: none;
+        border-radius: 22px 26px 0 0;
+        transform: translateY(105%);
+      }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -561,6 +768,7 @@
           Upload a photo and click Analyze to start.
         </div>
       </div>
+      <div class="suggestions" id="suggestions" hidden></div>
       <form class="chat-input" id="chat-form">
         <input type="text" id="chat-text" placeholder="Type your answer…" autocomplete="off" disabled>
         <button type="submit" id="send-btn" disabled>Send</button>
@@ -582,6 +790,28 @@
   <section id="recommendations" hidden>
     <h2><span class="num">3</span>Your routine</h2>
     <p class="disclaimer">Results may vary. Patch test new products first. This is not medical advice.</p>
+    <div class="budget" id="budget-box" hidden>
+      <div class="budget-head">
+        <span class="budget-total" id="budget-total"></span>
+        <span class="budget-label" id="budget-label"></span>
+        <span class="budget-status" id="budget-status"></span>
+      </div>
+      <div class="budget-meter" aria-hidden="true">
+        <span class="budget-band" id="budget-band"></span>
+        <span class="budget-pin" id="budget-pin"></span>
+      </div>
+      <p class="budget-over" id="budget-over" hidden>
+        Your routine is over budget. I can recalculate to keep the most important products within it.
+        <button type="button" id="budget-over-recalc">Recalculate to fit</button>
+      </p>
+      <p class="budget-leftout" id="budget-leftout" hidden></p>
+      <p class="budget-typical" id="budget-typical"></p>
+      <form class="budget-form" id="budget-form">
+        <label for="budget-input">Try a different budget</label>
+        <span class="budget-input-wrap">$<input type="number" id="budget-input" min="0" step="5" inputmode="numeric"></span>
+        <button type="submit" class="secondary" id="budget-recalc">Recalculate</button>
+      </form>
+    </div>
     <div class="tabs" id="step-tabs" role="tablist" aria-label="Filter by product type"></div>
     <div class="cards" id="cards"></div>
     <details class="removed" id="removed" hidden>
@@ -597,6 +827,7 @@
         <div class="brand" id="detail-brand"></div>
         <h3 id="detail-name"></h3>
         <div class="price" id="detail-price"></div>
+        <div class="status" id="detail-status"></div>
       </div>
       <button type="button" class="icon" id="detail-close" aria-label="Close">×</button>
     </div>
@@ -616,10 +847,23 @@
     <div class="detail-actions">
       <a id="detail-link" target="_blank" rel="noopener noreferrer">View on Amazon →</a>
       <span class="spacer"></span>
-      <button type="button" class="secondary danger" id="detail-remove">Remove from routine</button>
-      <button type="button" id="detail-keep">Keep</button>
+      <button type="button" class="secondary" id="detail-swap">Swap for an alternative</button>
+      <button type="button" class="secondary danger" id="detail-remove">Remove</button>
+      <button type="button" id="detail-add">Add to my routine</button>
     </div>
   </dialog>
+
+  <button type="button" class="usage-tab" id="usage-tab" aria-controls="usage-panel" aria-expanded="false" hidden>
+    How to use <span class="count" id="usage-count"></span>
+  </button>
+  <aside class="panel usage-panel" id="usage-panel" aria-label="How to use your products">
+    <div class="usage-head">
+      <h2>How to use</h2>
+      <button type="button" class="icon" id="usage-close" aria-label="Close">×</button>
+    </div>
+    <p class="scribble">Your added products, in the order they go on.</p>
+    <div id="usage-body"></div>
+  </aside>
 
   <div class="toast" id="toast" role="status" hidden>
     <span id="toast-text"></span>
@@ -634,7 +878,12 @@
                       "#a07e56", "#825c43", "#604134", "#3a312a", "#292420"];
     const RATINGS_KEY = "dermalis.ratings";
     const LEGACY_RATINGS_KEY = "skinsage.ratings"; // pre-rename; read once so ratings carry over
+    const SELECTED_KEY = "dermalis.selected";
     const TOAST_MS = 6000;
+    // Application order; mirrors ROUTINE_STEPS_PRIORITY in backend/services/rag_service.py.
+    const STEP_ORDER = ["cleanser", "toner", "serum", "treatment", "exfoliant", "spot treatment", "eye cream", "moisturizer", "spf", "mask"];
+    // Steps used now and then rather than in the daily order.
+    const OCCASIONAL_STEPS = new Set(["mask", "spot treatment"]);
 
     // Rough timings for the progress estimate; tune as real latencies change.
     const SECONDS_TO_ANALYZE_PHOTO = 15;
@@ -649,10 +898,14 @@
       complete: false,
       controller: null, // AbortController for the in-flight request, if any
       recs: [],             // every recommendation, primaries and alternatives, in routine order
-      removed: new Set(),   // ASINs the user removed
+      removed: new Set(),   // ASINs the user swapped out for an alternative
+      droppedSteps: new Map(), // step -> ASIN shown when the user removed the whole step with ×
       filter: "all",        // selected product-type tab
+      budget: null,         // BudgetSummary from the API (budget, range, typical costs, left-out steps)
       openAsin: null,       // product shown in the detail dialog
       ratings: loadRatings(), // { asin: { stars, note } }, kept across sessions in this browser
+      selected: new Set(),  // ASINs the user added to their routine; drives the "How to use" panel
+      usageShown: false,    // the panel opens by itself on the first add only
     };
 
     function loadRatings() {
@@ -668,6 +921,21 @@
         localStorage.setItem(RATINGS_KEY, JSON.stringify(state.ratings));
       } catch {
         // Storage unavailable (private mode etc.); ratings still work for this page load.
+      }
+    }
+
+    function loadSelected() {
+      try {
+        return new Set(JSON.parse(localStorage.getItem(SELECTED_KEY)) || []);
+      } catch {
+        return new Set();
+      }
+    }
+    function saveSelected() {
+      try {
+        localStorage.setItem(SELECTED_KEY, JSON.stringify([...state.selected]));
+      } catch {
+        // Storage unavailable; selections still work for this page load.
       }
     }
 
@@ -750,8 +1018,14 @@
         controller: null,
         recs: [],
         removed: new Set(),
+        droppedSteps: new Map(),
         filter: "all",
+        budget: null,
+        selected: new Set(),
+        usageShown: false,
       });
+      saveSelected();
+      closeUsage();
       closeDetail();
       hideToast();
       fileInput.value = "";
@@ -769,12 +1043,42 @@
     $("reset-btn").addEventListener("click", resetSession);
 
     function updateControls() {
-      const chatReady = state.skinProfile && state.skinProfile.monk_tone > 0 && !state.complete;
+      // The chat stays open after the routine is built, for follow-up questions about it.
+      const chatReady = state.skinProfile && state.skinProfile.monk_tone > 0;
       analyzeBtn.disabled = state.busy || !state.imageDataUrl;
       chatText.disabled = state.busy || !chatReady;
       sendBtn.disabled = state.busy || !chatReady;
-      if (!chatText.disabled) chatText.focus();
+      chatText.placeholder = state.complete ? "Ask anything about your routine…" : "Type your answer…";
+      // preventScroll: don't yank the page back up from the routine the user is reading.
+      if (!chatText.disabled) chatText.focus({ preventScroll: true });
+      renderSuggestions();
       renderProgress();
+    }
+
+    // Starter questions shown once the routine exists, so it's obvious the chat keeps going.
+    function renderSuggestions() {
+      const box = $("suggestions");
+      const recs = state.complete ? visibleRecs().map((s) => s.rec) : [];
+      box.hidden = !recs.length || state.busy;
+      if (box.hidden) return;
+      // Ask about the star active (serum/treatment), e.g. "Niacinamide 10%" -> "niacinamide".
+      const active = recs.find((r) => r.routine_step === "serum" || r.routine_step === "treatment") || recs[0];
+      const ingredient = (ingredientTags(active)[0] || "").replace(/\s*\(.*$|\s*\d.*$/, "").trim().toLowerCase();
+      const questions = [
+        ingredient && `What does ${ingredient} do?`,
+        "What order do I apply these in?",
+        `How long does the ${active.product_name} usually last?`,
+      ].filter(Boolean);
+      box.innerHTML = "";
+      for (const q of questions) {
+        const chip = el("button", "", q);
+        chip.type = "button";
+        chip.addEventListener("click", () => {
+          chatText.value = q;
+          $("chat-form").requestSubmit();
+        });
+        box.appendChild(chip);
+      }
     }
 
     // --- Progress sidebar: what Dermalis still needs, and roughly how long until the routine ---
@@ -783,7 +1087,8 @@
       { label: "Main concerns", done: (p) => p?.confirmed_concerns.length > 0, answer: true },
       { label: "Monthly budget", done: (p) => p?.budget_monthly != null, answer: true },
       { label: "Fragrance preference", done: (p) => p?.fragrance_free != null, answer: true },
-      { label: "Sensitivities", done: (p) => p?.allergies.length > 0, optional: true },
+      { label: "Sensitivities", done: (p) => p?.allergies != null, answer: true },
+      { label: "Products tried", done: (p) => p?.products_liked != null || p?.products_disliked != null, answer: true },
       { label: "Skin goals", done: (p) => p?.goals.length > 0, optional: true },
       { label: "Routine built", done: () => state.complete },
     ];
@@ -829,9 +1134,9 @@
       }
 
       $("progress-tip").textContent = state.complete
-        ? "Tap Details on any product to rate it or jot a note."
+        ? "Keep chatting! Ask me what an ingredient does, what order to apply things, or how long they last."
         : p
-          ? "Only the first few are needed. The extras just make it more personal."
+          ? "Skin goals are optional. They just make it more personal."
           : "After your photo, I'll ask a few quick questions.";
     }
 
@@ -855,8 +1160,11 @@
         ["Skin type", p.skin_type],
         ["Observed", p.observed_concerns.join(", ")],
         ["Concerns", p.confirmed_concerns.join(", ")],
-        ["Allergies", p.allergies.join(", ")],
-        ["Budget", p.budget_monthly != null ? `$${p.budget_monthly}/month` : ""],
+        // null = not asked yet (hide the row); [] = asked, nothing to report.
+        ["Sensitivities", p.allergies == null ? "" : p.allergies.join(", ") || "none"],
+        ["Works for you", (p.products_liked || []).join(", ")],
+        ["Didn't work", (p.products_disliked || []).join(", ")],
+        ["Budget", p.budget_monthly != null ? `$${p.budget_monthly} for the routine` : ""],
         ["Fragrance-free", p.fragrance_free == null ? "" : (p.fragrance_free ? "yes" : "no preference")],
       ];
       for (const [label, value] of rows) {
@@ -872,7 +1180,6 @@
     // --- Recommendations: type tabs, cards, details, remove/swap/undo ---
     const amazonUrl = (asin) => `https://www.amazon.com/dp/${encodeURIComponent(asin)}`;
     const stepLabel = (step) => (step === "spf" ? "SPF" : step.replace(/\b\w/g, (c) => c.toUpperCase()));
-    const starText = (n) => "★".repeat(n) + "☆".repeat(5 - n);
     const findRec = (asin) => state.recs.find((r) => r.amazon_asin === asin);
 
     function el(tag, className, text) {
@@ -892,28 +1199,126 @@
       return groups;
     }
 
-    // The product shown for each step: the best-ranked one the user hasn't removed.
+    // The product shown for each step: the budget pick if the user kept it, otherwise the
+    // best-ranked one they haven't swapped out. Steps left out to fit the budget, or removed
+    // by the user, aren't shown.
     function visibleRecs() {
       const shown = [];
       for (const [step, recs] of stepGroups()) {
+        if (recs.every((r) => r.budget_left_out) || state.droppedSteps.has(step)) continue;
         const active = recs.filter((r) => !state.removed.has(r.amazon_asin));
+        active.sort((a, b) => a.is_alternative - b.is_alternative); // stable: keeps rank order otherwise
         if (active.length) shown.push({ step, rec: active[0], spare: active.length - 1 });
       }
+      // A budget refit appends removed products to state.recs, so restore routine order here.
+      shown.sort((a, b) => STEP_ORDER.indexOf(a.step) - STEP_ORDER.indexOf(b.step));
       return shown;
     }
 
-    function renderRecommendations(recs) {
+    function renderRecommendations(recs, budget) {
       state.recs = recs;
+      state.budget = budget || null;
       state.removed = new Set();
+      state.droppedSteps = new Map();
       state.filter = "all";
+      // Keep earlier picks (e.g. after a reload) only if they're in this routine.
+      state.selected = new Set([...loadSelected()].filter((asin) => findRec(asin)));
+      saveSelected();
       renderRoutine();
       $("recommendations").hidden = false;
       $("recommendations").scrollIntoView({ behavior: "smooth" });
     }
 
+    // --- Budget: live total vs budget ± tolerance, and refitting via the backend ---
+    const BUDGET_TOLERANCE = 10;
+    const money = (n) => `$${Math.round(n)}`;
+
+    function budgetStatus(total, budget) {
+      if (budget == null) return "no_budget";
+      if (total > budget + BUDGET_TOLERANCE) return "over";
+      return total < budget - BUDGET_TOLERANCE ? "under" : "within";
+    }
+
+    function renderBudget(shown) {
+      const b = state.budget;
+      $("budget-box").hidden = !b;
+      if (!b) return;
+      const total = shown.reduce((sum, s) => sum + (s.rec.price_usd || 0), 0);
+      const status = budgetStatus(total, b.budget);
+      $("budget-box").dataset.status = status;
+      $("budget-total").textContent = money(total);
+      $("budget-label").textContent =
+        b.budget == null ? "upfront for your routine" : `upfront · your budget ${money(b.budget)} (±${money(BUDGET_TOLERANCE)})`;
+      $("budget-status").textContent = {
+        within: "Right on budget",
+        under: "Under budget",
+        over: `Over by ${money(total - b.budget - BUDGET_TOLERANCE)}`,
+        no_budget: "",
+      }[status];
+
+      // Meter: shaded band for the allowed range, a pin at the current total.
+      const max = Math.max(total, (b.budget ?? total) + BUDGET_TOLERANCE, 1) * 1.25;
+      const pct = (n) => `${Math.min(100, Math.max(0, (n / max) * 100))}%`;
+      $("budget-band").hidden = b.budget == null;
+      if (b.budget != null) {
+        $("budget-band").style.left = pct(b.budget - BUDGET_TOLERANCE);
+        $("budget-band").style.width = `calc(${pct(b.budget + BUDGET_TOLERANCE)} - ${pct(b.budget - BUDGET_TOLERANCE)})`;
+      }
+      $("budget-pin").style.left = pct(total);
+
+      $("budget-typical").textContent =
+        `A basic routine (cleanser, moisturizer, sunscreen) usually runs ${money(b.typical_basic_low)}–${money(b.typical_basic)}; ` +
+        `a full one about ${money(b.typical_full)}. Most products last 2-4 months.`;
+
+      // Top-ranked product of each step that was dropped to fit the budget.
+      const leftOut = [...stepGroups().values()].filter((recs) => recs.every((r) => r.budget_left_out)).map((recs) => recs[0]);
+      $("budget-leftout").hidden = !leftOut.length;
+      $("budget-leftout").textContent = leftOut.length
+        ? `Left out to fit your budget: ${leftOut.map((r) => `${stepLabel(r.routine_step)} (${r.price})`).join(", ")}. Raise your budget to include them.`
+        : "";
+
+      $("budget-over").hidden = status !== "over";
+      if (document.activeElement !== $("budget-input")) $("budget-input").value = b.budget ?? "";
+    }
+
+    async function refitBudget(budget) {
+      const isOut = (r) => state.removed.has(r.amazon_asin) || state.droppedSteps.has(r.routine_step);
+      const kept = state.recs.filter((r) => !isOut(r));
+      const removed = state.recs.filter(isOut);
+      const button = $("budget-recalc");
+      button.disabled = true;
+      try {
+        const data = await postJSON("/fit-budget", {
+          recommendations: kept,
+          budget,
+          confirmed_concerns: state.skinProfile?.confirmed_concerns || [],
+        });
+        state.recs = [...data.recommendations, ...removed];
+        state.budget = data.budget;
+        if (state.skinProfile) {
+          state.skinProfile.budget_monthly = budget;
+          renderProfile(state.skinProfile);
+        }
+        hideToast();
+        renderRoutine();
+      } catch (err) {
+        showToast(`Couldn't recalculate: ${err.message}`, null);
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    $("budget-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const value = $("budget-input").value.trim();
+      refitBudget(value === "" ? null : Math.max(0, Math.round(Number(value))));
+    });
+    $("budget-over-recalc").addEventListener("click", () => refitBudget(state.budget?.budget ?? null));
+
     function renderRoutine() {
       const shown = visibleRecs();
       if (state.filter !== "all" && !shown.some((s) => s.step === state.filter)) state.filter = "all";
+      renderBudget(shown);
       renderTabs(shown);
       const cards = $("cards");
       cards.innerHTML = "";
@@ -922,6 +1327,8 @@
       }
       if (!shown.length) cards.appendChild(el("p", "hint", "You've removed everything. Restore products from the list below."));
       renderRemoved();
+      renderSuggestions();
+      renderUsage(shown);
     }
 
     function renderTabs(shown) {
@@ -941,8 +1348,21 @@
       }
     }
 
+    // Short ingredient names for the card; older payloads only have key_ingredients.
+    const ingredientTags = (rec) =>
+      rec.ingredient_tags?.length
+        ? rec.ingredient_tags.slice(0, 3)
+        : rec.key_ingredients.slice(0, 3).map((i) => i.replace(/\s*\(.*$|\s*[\d.,]+%.*$/, "").trim());
+
     function buildCard({ step, rec, spare }) {
-      const card = el("article", "card");
+      const added = state.selected.has(rec.amazon_asin);
+      const card = el("article", added ? "card added" : "card");
+      const close = el("button", "icon card-x", "×");
+      close.type = "button";
+      close.setAttribute("aria-label", `Remove ${rec.product_name}`);
+      close.title = "Remove from routine";
+      close.addEventListener("click", () => dropStep(rec.amazon_asin));
+      card.append(close);
 
       const stepRow = el("div", "step-row");
       const stamp = el("span", "step", stepLabel(step));
@@ -951,65 +1371,110 @@
       if (rec.routine_time) stepRow.append(el("span", "time", rec.routine_time));
       card.append(stepRow);
 
-      if (rec.is_alternative) card.append(el("div", "note swapped", "Swapped in"));
       card.append(el("div", "brand", rec.brand), el("h3", "", rec.product_name));
       if (rec.price) card.append(el("div", "price", rec.price));
-      card.append(el("p", "why", rec.why_recommended));
-
-      const rating = state.ratings[rec.amazon_asin];
-      if (rating?.stars) card.append(el("div", "rating", starText(rating.stars)));
-      if (spare) card.append(el("div", "note", `${spare} alternative${spare > 1 ? "s" : ""} if you remove this`));
+      const tags = el("div", "ingredients");
+      for (const tag of ingredientTags(rec)) tags.appendChild(el("span", "", tag));
+      card.append(tags);
 
       const actions = el("div", "card-actions");
       const details = el("button", "secondary", "Details");
       details.type = "button";
       details.addEventListener("click", () => openDetail(rec.amazon_asin));
-      const remove = el("button", "secondary danger", "Remove");
-      remove.type = "button";
-      remove.addEventListener("click", () => removeRec(rec.amazon_asin));
+      const add = el("button", added ? "added" : "", added ? "✓ Added" : "Add");
+      add.type = "button";
+      add.setAttribute("aria-pressed", String(added));
+      add.addEventListener("click", () => toggleSelected(rec.amazon_asin));
+      actions.append(add, details);
+      if (spare) {
+        const swap = el("button", "secondary", `Swap (${spare})`);
+        swap.type = "button";
+        swap.title = `Replace with the next-best ${stepLabel(step).toLowerCase()}`;
+        swap.addEventListener("click", () => swapRec(rec.amazon_asin));
+        actions.append(swap);
+      }
       const link = el("a", "", "Amazon →");
       link.href = amazonUrl(rec.amazon_asin);
       link.target = "_blank";
       link.rel = "noopener noreferrer";
-      actions.append(details, remove, link);
+      actions.append(link);
       card.append(actions);
       return card;
     }
 
     function renderRemoved() {
-      const removed = state.recs.filter((r) => state.removed.has(r.amazon_asin));
+      const dropped = [...state.droppedSteps].map(([step, asin]) => [findRec(asin), () => restoreStep(step)]);
+      const swapped = state.recs
+        .filter((r) => state.removed.has(r.amazon_asin) && !state.droppedSteps.has(r.routine_step))
+        .map((rec) => [rec, () => restoreRec(rec.amazon_asin)]);
+      const removed = [...dropped, ...swapped].filter(([rec]) => rec);
       $("removed").hidden = !removed.length;
       $("removed-summary").textContent = `Removed (${removed.length})`;
       const list = $("removed-list");
       list.innerHTML = "";
-      for (const rec of removed) {
+      for (const [rec, onRestore] of removed) {
         const item = el("li");
         const restore = el("button", "secondary", "Restore");
         restore.type = "button";
         restore.style.padding = "4px 10px";
-        restore.addEventListener("click", () => restoreRec(rec.amazon_asin));
+        restore.addEventListener("click", onRestore);
         item.append(restore, `${stepLabel(rec.routine_step)}: ${rec.brand} ${rec.product_name}`);
         list.appendChild(item);
       }
     }
 
-    function removeRec(asin) {
+    // Swapped-out or dropped products leave the "How to use" panel; returns whether it was there.
+    function unselect(asin) {
+      const wasAdded = state.selected.delete(asin);
+      if (wasAdded) saveSelected();
+      return wasAdded;
+    }
+
+    // Replace a product with the next-best alternative for its step.
+    function swapRec(asin) {
       const rec = findRec(asin);
       if (!rec) return;
+      const wasAdded = unselect(asin);
       state.removed.add(asin);
       closeDetail();
       renderRoutine();
       const replacement = visibleRecs().find((s) => s.step === rec.routine_step)?.rec;
       showToast(
         replacement
-          ? `Removed ${rec.product_name}. Swapped in ${replacement.brand} ${replacement.product_name}.`
+          ? `Swapped in ${replacement.brand} ${replacement.product_name}.`
           : `Removed ${rec.product_name}.`,
-        () => restoreRec(asin),
+        () => restoreRec(asin, wasAdded),
       );
     }
 
-    function restoreRec(asin) {
+    // × on a card: take the product and its step out of the routine, no replacement.
+    function dropStep(asin) {
+      const rec = findRec(asin);
+      if (!rec) return;
+      const wasAdded = unselect(asin);
+      state.droppedSteps.set(rec.routine_step, asin);
+      closeDetail();
+      renderRoutine();
+      showToast(`Removed ${rec.product_name}.`, () => restoreStep(rec.routine_step, wasAdded));
+    }
+
+    function restoreStep(step, reAdd = false) {
+      const asin = state.droppedSteps.get(step);
+      state.droppedSteps.delete(step);
+      if (reAdd && asin) {
+        state.selected.add(asin);
+        saveSelected();
+      }
+      hideToast();
+      renderRoutine();
+    }
+
+    function restoreRec(asin, reAdd = false) {
       state.removed.delete(asin);
+      if (reAdd) {
+        state.selected.add(asin);
+        saveSelected();
+      }
       hideToast();
       renderRoutine();
     }
@@ -1020,6 +1485,7 @@
     function showToast(text, onUndo) {
       $("toast-text").textContent = text;
       toastUndo = onUndo;
+      $("toast-undo").hidden = !onUndo;
       $("toast").hidden = false;
       clearTimeout(toastTimer);
       toastTimer = setTimeout(hideToast, TOAST_MS);
@@ -1044,6 +1510,12 @@
       $("detail-brand").textContent = rec.brand;
       $("detail-name").textContent = rec.product_name;
       $("detail-price").textContent = rec.price || "";
+      const spare = visibleRecs().find((s) => s.rec.amazon_asin === asin)?.spare || 0;
+      $("detail-status").textContent = [
+        rec.is_alternative && "Swapped in",
+        spare && `${spare} more alternative${spare > 1 ? "s" : ""}`,
+      ].filter(Boolean).join(" · ");
+      $("detail-swap").hidden = !spare;
       $("detail-why").textContent = rec.why_recommended;
       $("detail-tone").textContent = rec.tone_note || "No tone-specific notes for this product.";
       $("detail-link").href = amazonUrl(asin);
@@ -1060,6 +1532,7 @@
 
       $("detail-note").value = state.ratings[asin]?.note || "";
       renderStars();
+      renderAddButton();
       if (!dialog.open) dialog.showModal();
     }
 
@@ -1096,12 +1569,124 @@
 
     $("detail-note").addEventListener("input", (e) => setRating({ note: e.target.value.trim() }));
     $("detail-close").addEventListener("click", closeDetail);
-    $("detail-keep").addEventListener("click", closeDetail);
-    $("detail-remove").addEventListener("click", () => removeRec(state.openAsin));
+    function renderAddButton() {
+      const added = state.selected.has(state.openAsin);
+      const button = $("detail-add");
+      button.textContent = added ? "✓ In my routine" : "Add to my routine";
+      button.className = added ? "secondary" : "";
+      button.setAttribute("aria-pressed", String(added));
+    }
+    // Adding closes the dialog so the user sees the "How to use" panel; un-adding stays put.
+    $("detail-add").addEventListener("click", () => {
+      if (toggleSelected(state.openAsin)) closeDetail();
+      else renderAddButton();
+    });
+    $("detail-remove").addEventListener("click", () => dropStep(state.openAsin));
+    $("detail-swap").addEventListener("click", () => swapRec(state.openAsin));
     dialog.addEventListener("close", () => (state.openAsin = null));
     // A click on the backdrop (the dialog element itself, outside its content) closes it.
     dialog.addEventListener("click", (e) => {
       if (e.target === dialog) closeDetail();
+    });
+
+    // --- Added products and the "How to use" panel ---
+    const SUN_ICON = `<svg width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <circle cx="16" cy="16" r="6.5" fill="#EFD58F" stroke="#2A2620" stroke-width="1.8"/>
+      <path d="M16 3v4M16 25v4M3 16h4M25 16h4M6.8 6.8l2.8 2.8M22.4 22.4l2.8 2.8M6.8 25.2l2.8-2.8M22.4 9.6l2.8-2.8" stroke="#C8664B" stroke-width="2" stroke-linecap="round"/>
+    </svg>`;
+    const MOON_ICON = `<svg width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <path d="M21 4.5A11.5 11.5 0 1 0 27.5 21 9.5 9.5 0 0 1 21 4.5z" fill="#EFD58F" stroke="#FBF7F0" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M25 8.5l.7 1.6 1.6.7-1.6.7-.7 1.6-.7-1.6-1.6-.7 1.6-.7z" fill="#FBF7F0"/>
+    </svg>`;
+    const LEAF_ICON = `<svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <path d="M6 26c2-12 9-18 21-20-1 12-8 19-21 20z" fill="#B5C9B1" stroke="#2A2620" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M6 26c5-6 10-10 15-13" stroke="#4F6B53" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>`;
+
+    // Returns true when the product is now added.
+    function toggleSelected(asin) {
+      const rec = findRec(asin);
+      if (!rec) return false;
+      const adding = !state.selected.has(asin);
+      if (adding) state.selected.add(asin);
+      else state.selected.delete(asin);
+      saveSelected();
+      renderRoutine();
+      if (adding) {
+        if (!state.usageShown) openUsage();
+        showToast(`Added ${rec.product_name}. Here's how to use it.`, () => {
+          hideToast();
+          toggleSelected(asin);
+        });
+      } else {
+        hideToast();
+      }
+      return adding;
+    }
+
+    function renderUsage(shown) {
+      const added = shown.map((s) => s.rec).filter((rec) => state.selected.has(rec.amazon_asin));
+      $("usage-tab").hidden = !added.length;
+      $("usage-count").textContent = added.length;
+      if (!added.length) closeUsage();
+
+      const order = (rec) => STEP_ORDER.indexOf(rec.routine_step);
+      const daily = added.filter((rec) => !OCCASIONAL_STEPS.has(rec.routine_step)).sort((a, b) => order(a) - order(b));
+      const sections = [
+        ["day", SUN_ICON, "Morning", "rise & shine", daily.filter((rec) => (rec.routine_time || "").includes("AM"))],
+        ["night", MOON_ICON, "Evening", "wind down", daily.filter((rec) => (rec.routine_time || "").includes("PM"))],
+        ["extra", LEAF_ICON, "Now and then", "when you need it", added.filter((rec) => OCCASIONAL_STEPS.has(rec.routine_step))],
+      ];
+
+      const body = $("usage-body");
+      body.innerHTML = "";
+      for (const [theme, icon, title, note, recs] of sections) {
+        if (!recs.length) continue;
+        const section = el("section", `usage-section ${theme}`);
+        const heading = el("h3");
+        heading.innerHTML = icon; // static SVG markup, no user data
+        heading.append(title, el("small", "", note));
+        section.appendChild(heading);
+        const list = el(theme === "extra" ? "ul" : "ol");
+        recs.forEach((rec, i) => list.appendChild(buildUsageItem(rec, theme === "extra" ? "•" : i + 1)));
+        section.appendChild(list);
+        body.appendChild(section);
+      }
+    }
+
+    function buildUsageItem(rec, marker) {
+      const item = el("li", "usage-item");
+      item.appendChild(el("span", "usage-num", String(marker)));
+      const main = el("div");
+      const stamp = el("span", "step", stepLabel(rec.routine_step));
+      stamp.dataset.step = rec.routine_step;
+      const name = el("div", "usage-name", rec.product_name);
+      name.prepend(el("b", "", rec.brand));
+      const meta = el("div", "usage-meta");
+      if (rec.amount) meta.appendChild(el("span", "usage-amount", rec.amount));
+      if (rec.frequency) meta.appendChild(el("span", "usage-freq", rec.frequency));
+      main.append(stamp, name, meta);
+      if (rec.how_to_use) main.appendChild(el("p", "usage-how", rec.how_to_use));
+      item.appendChild(main);
+      return item;
+    }
+
+    function openUsage() {
+      state.usageShown = true;
+      $("usage-panel").classList.add("open");
+      $("usage-tab").setAttribute("aria-expanded", "true");
+    }
+    function closeUsage() {
+      $("usage-panel").classList.remove("open");
+      $("usage-tab").setAttribute("aria-expanded", "false");
+    }
+    $("usage-tab").addEventListener("click", () =>
+      $("usage-panel").classList.contains("open") ? closeUsage() : openUsage(),
+    );
+    $("usage-close").addEventListener("click", closeUsage);
+    document.addEventListener("keydown", (e) => {
+      // The detail dialog handles its own Esc first.
+      if (e.key === "Escape" && !dialog.open) closeUsage();
     });
 
     async function postJSON(path, body, signal) {
@@ -1165,15 +1750,18 @@
           conversation_history: state.history,
           skin_profile: state.skinProfile,
           user_message: text,
+          // Once the routine exists, send what's on screen so follow-ups are about it.
+          routine: state.complete ? visibleRecs().map((s) => s.rec) : null,
         }, controller.signal);
         spinner.remove();
         state.history.push({ role: "user", content: text }, { role: "assistant", content: data.assistant_response });
         state.skinProfile = data.updated_skin_profile;
         renderProfile(state.skinProfile);
         addMessage("assistant", data.assistant_response);
-        if (data.is_complete) {
+        // Follow-up answers come back without recommendations; keep the routine as it is.
+        if (data.is_complete && data.recommendations.length) {
           state.complete = true;
-          renderRecommendations(data.recommendations);
+          renderRecommendations(data.recommendations, data.budget);
         }
       } catch (err) {
         if (controller.signal.aborted) return; // reset while waiting; page is already cleared

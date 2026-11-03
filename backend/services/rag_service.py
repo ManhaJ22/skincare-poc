@@ -5,7 +5,7 @@ import chromadb
 from openai import OpenAI
 
 from models.schemas import SkinProfile
-from services import tone_rules
+from services import budget, tone_rules
 
 EMBEDDING_MODEL = "text-embedding-ada-002"
 COLLECTION_NAME = "dermalis_kb"
@@ -14,6 +14,7 @@ KB_FOLDERS = {"products": "product", "ingredients": "ingredient"}
 
 _openai: OpenAI | None = None
 _collection = None
+_typical_costs: dict = {}
 
 # Routine order (also the display order for recommendations).
 ROUTINE_STEPS_PRIORITY = [
@@ -49,7 +50,7 @@ def _embed(texts: list[str]) -> list[list[float]]:
 
 
 def init_collection() -> int:
-    global _collection
+    global _collection, _typical_costs
     client = chromadb.Client()
     _collection = client.get_or_create_collection(COLLECTION_NAME, metadata={"hnsw:space": "cosine"})
 
@@ -66,13 +67,22 @@ def init_collection() -> int:
                     monk_tones_max=tone_max,
                     **_parse_tone_fields(text, path.name),
                     **_parse_listing(text, path.name),
+                    **_parse_usage(text, path.name),
                 )
             ids.append(f"{doc_type}:{path.stem}")
             docs.append(text)
             metadatas.append(metadata)
 
     _collection.upsert(ids=ids, documents=docs, metadatas=metadatas, embeddings=_embed(docs))
+    _typical_costs = budget.typical_costs(
+        [(meta["routine_step"], meta["price_usd"]) for meta in metadatas if meta["type"] == "product"]
+    )
     return _collection.count()
+
+
+def typical_routine_costs() -> dict:
+    """What routines usually cost, from the KB's prices; see budget.typical_costs."""
+    return _typical_costs
 
 
 def build_query(skin_profile: SkinProfile) -> str:
@@ -90,8 +100,11 @@ def build_query(skin_profile: SkinProfile) -> str:
         parts.append(f"budget ${skin_profile.budget_monthly} per month")
     if skin_profile.fragrance_free:
         parts.append("fragrance free")
-    if skin_profile.allergies:
-        parts.append("avoid: " + ", ".join(skin_profile.allergies))
+    avoid = (skin_profile.allergies or []) + (skin_profile.products_disliked or [])
+    if avoid:
+        parts.append("avoid: " + ", ".join(avoid))
+    if skin_profile.products_liked:
+        parts.append("likes: " + ", ".join(skin_profile.products_liked))
     return "; ".join(parts) or "gentle daily skincare routine"
 
 
@@ -145,7 +158,17 @@ def _parse_listing(doc_text: str, filename: str) -> dict:
         raise ValueError(f"{filename}: add an 'ASIN:' line")
     price = _field(doc_text, "price") or _field(doc_text, "price range") or ""
     # Drop trailing notes like "$6-$12 (30 mL; about 2-3 months ...)".
-    return {"asin": asin, "price": price.split(" (")[0].strip()}
+    price = price.split(" (")[0].strip()
+    price_usd = _parse_price_usd(price)
+    if price_usd is None:
+        raise ValueError(f"{filename}: add a 'Price: ~$N' or 'PRICE RANGE: $A-$B' line")
+    return {"asin": asin, "price": price, "price_usd": price_usd}
+
+
+def _parse_price_usd(price: str) -> float | None:
+    """'~$14' -> 14.0, '$25-$37' -> 31.0 (a range counts as its midpoint)."""
+    amounts = [float(n) for n in re.findall(r"\d+(?:\.\d+)?", price)]
+    return sum(amounts[:2]) / len(amounts[:2]) if amounts else None
 
 
 def _parse_tone_fields(doc_text: str, filename: str) -> dict:
@@ -165,6 +188,31 @@ def _parse_tone_fields(doc_text: str, filename: str) -> dict:
         "targets": (_field(doc_text, "targets") or "").lower(),
         "fragrance_free": (_field(doc_text, "fragrance free") or "").lower().startswith("yes"),
     }
+
+
+def _parse_routine_time(value: str) -> str:
+    """'Both (...)' / 'Morning and evening' -> 'AM & PM'. Only the part before any note counts,
+    so 'evening preferred (...). If used in the morning, ...' stays 'PM'."""
+    head = re.split(r"[(.]", value.lower(), maxsplit=1)[0]
+    morning = "morning" in head
+    evening = "evening" in head or "night" in head
+    if head.strip().startswith("both") or (morning and evening):
+        return "AM & PM"
+    return "AM" if morning else "PM" if evening else ""
+
+
+def _parse_usage(doc_text: str, filename: str) -> dict:
+    """How much, how often, how and when to apply; shown in the 'How to use' panel."""
+    usage = {}
+    for label in ("amount", "frequency", "how to use"):
+        value = _field(doc_text, label)
+        if not value:
+            raise ValueError(f"{filename}: add a '{label.capitalize()}:' line")
+        usage[label.replace(" ", "_")] = value
+    usage["routine_time"] = _parse_routine_time(_field(doc_text, "routine time") or _field(doc_text, "time of use") or "")
+    if not usage["routine_time"]:
+        raise ValueError(f"{filename}: add a 'Routine time: Morning|Evening|Both' line")
+    return usage
 
 
 def _step_rank(doc: str) -> int:
@@ -253,6 +301,22 @@ def group_by_step(ranked: list[dict], per_step: int) -> dict[str, list[dict]]:
 def retrieve_routine_candidates(skin_profile: SkinProfile, per_step: int = 2) -> dict[str, list[dict]]:
     """Best tone-fit products per routine step: a primary pick plus alternatives to swap in."""
     return group_by_step(_eligible_products(skin_profile), per_step)
+
+
+def retrieve_for_question(question: str, routine_asins: list[str], top_k: int = 4) -> list[str]:
+    """
+    Context for a follow-up question: the full KB docs of every product in the user's routine,
+    plus the docs (ingredients or products) that best match the question itself, e.g. the
+    niacinamide ingredient file for "what does niacinamide do?".
+    """
+    if _collection is None:
+        raise RuntimeError("Knowledge base not initialized; call init_collection() first.")
+    docs = []
+    if routine_asins:
+        docs += _collection.get(where={"asin": {"$in": routine_asins}}, include=["documents"])["documents"]
+    hits = _query(_embed([question])[0], {"type": {"$in": ["ingredient", "product"]}}, n_results=top_k)
+    docs += [hit["doc"] for hit in hits if hit["doc"] not in docs]
+    return docs
 
 
 def retrieve_relevant_products(skin_profile: SkinProfile, top_k: int = 5, doc_type: str | None = None) -> list[str]:

@@ -1,9 +1,12 @@
 Product: Neutrogena Oil-Free Acne Wash with Salicylic Acid
 Brand: Neutrogena
-ASIN: B00HFH1BHU
+ASIN: B00UOL8CC8
 Price: ~$9
 Routine step: Cleanser
 Routine time: Evening only (or once daily max)
+Amount: a nickel-sized amount
+Frequency: once daily, in the evening
+How to use: Massage onto damp skin for 30-60 seconds, then rinse well. Use a gentle cleanser in the morning instead.
 Key ingredients: Salicylic Acid 2%, Aloe Vera, Chamomile
 Fragrance free: No (contains fragrance)
 Cruelty free: No
