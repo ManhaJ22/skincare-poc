@@ -4,8 +4,8 @@ import re
 from openai import OpenAI
 from pydantic import ValidationError
 
-from models.schemas import ConversationTurn, RecommendationResponse, SkinProfile
-from services import tone_rules
+from models.schemas import ConversationTurn, EnvironmentProfile, RecommendationResponse, SkinProfile
+from services import environment_rules, tone_rules
 from services.rag_service import ROUTINE_STEPS_PRIORITY, typical_routine_costs
 
 CHAT_MODEL = "gpt-4o"
@@ -33,7 +33,8 @@ EMPATHY AND SMALL TALK
 SUGGESTIONS
 - You can drop a quick, helpful tip tied to what they said (an ingredient, a habit, why SPF matters for dark marks), but don't name specific products. Products come in their routine at the end.
 
-WHAT YOU NEED TO LEARN (any order, whatever flows naturally; skip what's already known)
+WHAT YOU NEED TO LEARN (skip what's already known)
+Ask in this order, one at a time: concerns, then sensitivities and fragrance, then product history, then budget LAST, right before wrapping up. If they volunteer something early (e.g. a budget), record it and don't ask again.
 A field that is null in the profile has NOT been answered yet. Fill it in only from what the user actually said; "none" answers become []. Never infer an answer to a question they didn't address: if you asked about products and they only talked about allergies, record the allergies, leave the product fields null, and ask about products again.
 - Which concerns they actually care about (confirm or refine what you observed) -> confirmed_concerns. REQUIRED.
 - Any allergies, sensitivities, or ingredients their skin reacts to (stinging, redness, breakouts) -> allergies. REQUIRED. Ask explicitly; "none" -> [].
@@ -55,6 +56,9 @@ Typical costs: {typical_costs} Most products last 2-4 months, so this isn't a mo
 
 Skin tone guidance (use it to make questions and tips relevant; never state tone numbers to the user):
 {tone_guidance}
+
+Climate and environment (factors that can affect skin; use them to make tips relevant):
+{environment}
 
 Current skin profile:
 {skin_profile}
@@ -90,6 +94,9 @@ What you noticed in the photo:
 
 Skin tone guidance (use only if it makes your question more relevant):
 {tone_guidance}
+
+Climate and environment (optional: you may mention it in one short, natural phrase, e.g. a welcoming aside about the weather. Keep it separate from what you saw in the photo; never connect the climate to their concerns or suggest it causes anything):
+{environment}
 """
 
 FOLLOWUP_PROMPT = """You are Dermalis, a warm, skincare-savvy friend. You've already built this person's routine (below) and they're now asking follow-up questions. Keep the conversation going naturally; this is an ongoing chat, not a one-and-done.
@@ -113,6 +120,9 @@ Never diagnose medical conditions or promise results. For anything that sounds l
 
 Skin tone guidance (never state tone numbers):
 {tone_guidance}
+
+Climate and environment (factors that can affect skin; reference naturally when relevant):
+{environment}
 
 Their profile:
 {skin_profile}
@@ -147,6 +157,9 @@ User profile:
 Skin tone guidance:
 {tone_guidance}
 
+Climate and environment (where relevant, why_recommended can mention it as a suggestion, never a cause):
+{environment}
+
 Candidate products:
 {product_docs}
 
@@ -178,12 +191,13 @@ def _chat_json(messages: list[dict], temperature: float) -> dict:
     return json.loads(response.choices[0].message.content or "{}")
 
 
-def get_opening_message(skin_profile: SkinProfile) -> str:
+def get_opening_message(skin_profile: SkinProfile, environment: EnvironmentProfile | None = None) -> str:
     """First chat message, written from what the photo analysis observed."""
     prompt = OPENING_PROMPT.format(
         observed_concerns=", ".join(skin_profile.observed_concerns) or "nothing notable",
         skin_type=skin_profile.skin_type or "unclear",
         tone_guidance=tone_rules.guidance(skin_profile.monk_tone),
+        environment=environment_rules.guidance(environment),
     )
     response = _get_client().chat.completions.create(
         model=CHAT_MODEL,
@@ -223,12 +237,14 @@ def get_next_response(
     skin_profile: SkinProfile,
     user_message: str,
     retrieved_context: list[str],
+    environment: EnvironmentProfile | None = None,
 ) -> tuple[str, SkinProfile, bool]:
     typical = describe_typical_costs(typical_routine_costs())
     system = SYSTEM_PROMPT.format(
         typical_costs=typical[0].upper() + typical[1:],
         typical_costs_example=typical,
         tone_guidance=tone_rules.guidance(skin_profile.monk_tone),
+        environment=environment_rules.guidance(environment),
         skin_profile=skin_profile.model_dump_json(indent=2),
         retrieved_context="\n\n---\n\n".join(retrieved_context),
     )
@@ -264,6 +280,7 @@ def answer_followup(
     user_message: str,
     routine: list[RecommendationResponse],
     context: list[str],
+    environment: EnvironmentProfile | None = None,
 ) -> str:
     """Answer a question about the finished routine; the profile and routine are left unchanged."""
     routine_lines = "\n".join(
@@ -272,6 +289,7 @@ def answer_followup(
     ) or "(they removed every product)"
     system = FOLLOWUP_PROMPT.format(
         tone_guidance=tone_rules.guidance(skin_profile.monk_tone),
+        environment=environment_rules.guidance(environment),
         skin_profile=skin_profile.model_dump_json(indent=2),
         routine=routine_lines,
         context="\n\n---\n\n".join(context),
@@ -318,7 +336,11 @@ def _ingredient_tags(raw_tags, key_ingredients) -> list[str]:
     return tags
 
 
-def recommend(skin_profile: SkinProfile, candidates: dict[str, list[dict]]) -> list[RecommendationResponse]:
+def recommend(
+    skin_profile: SkinProfile,
+    candidates: dict[str, list[dict]],
+    environment: EnvironmentProfile | None = None,
+) -> list[RecommendationResponse]:
     """
     Write up the ranked per-step candidates. Code, not the model, decides step, price, and which
     pick is primary: the best-ranked surviving candidate per step; the rest become alternatives.
@@ -333,6 +355,7 @@ def recommend(skin_profile: SkinProfile, candidates: dict[str, list[dict]]) -> l
     prompt = RECOMMEND_PROMPT.format(
         skin_profile=skin_profile.model_dump_json(indent=2),
         tone_guidance=tone_rules.guidance(skin_profile.monk_tone),
+        environment=environment_rules.guidance(environment),
         product_docs="\n\n".join(sections),
     )
     data = _chat_json([{"role": "system", "content": prompt}], RECOMMEND_TEMPERATURE)
@@ -344,13 +367,18 @@ def recommend(skin_profile: SkinProfile, candidates: dict[str, list[dict]]) -> l
         if asin not in known or any(rec.amazon_asin == asin for _, _, rec in ranked):
             continue
         step, rank, meta = known[asin]
+        targets = [t.strip() for t in meta["targets"].split(",") if t.strip()]
+        climate_tag, climate_note = environment_rules.notes_for(step, targets, environment)
         try:
             rec = RecommendationResponse.model_validate({
                 **item,
                 "routine_step": step,
                 "price": meta["price"],
                 "price_usd": meta["price_usd"],
-                "targets": [t.strip() for t in meta["targets"].split(",") if t.strip()],
+                "targets": targets,
+                # Climate notes come from environment_rules, never the model.
+                "climate_tag": climate_tag,
+                "climate_note": climate_note,
                 "ingredient_tags": _ingredient_tags(item.get("ingredient_tags"), item.get("key_ingredients")),
                 # Usage facts come from the KB, never the model.
                 **{key: meta[key] for key in ("routine_time", "amount", "frequency", "how_to_use")},

@@ -4,8 +4,8 @@ from pathlib import Path
 import chromadb
 from openai import OpenAI
 
-from models.schemas import SkinProfile
-from services import budget, tone_rules
+from models.schemas import EnvironmentProfile, SkinProfile
+from services import budget, environment_rules, tone_rules
 
 EMBEDDING_MODEL = "text-embedding-ada-002"
 COLLECTION_NAME = "dermalis_kb"
@@ -271,21 +271,24 @@ def _query(embedding: list[float], where: dict, n_results: int) -> list[dict]:
     ]
 
 
-def rank_products(embedding: list[float], monk_tone: int | None) -> list[dict]:
-    """Every tone-eligible product, minus tone-rule exclusions, sorted by tone-adjusted score."""
+def rank_products(
+    embedding: list[float], monk_tone: int | None, environment: EnvironmentProfile | None = None
+) -> list[dict]:
+    """Every tone-eligible product, minus tone-rule exclusions, sorted by tone- and climate-adjusted score."""
     hits = _query(embedding, _product_filter(monk_tone), n_results=_collection.count())
     hits = [hit for hit in hits if not tone_rules.is_excluded(hit["meta"], monk_tone)]
     for hit in hits:
         hit["score"] = tone_rules.score(hit["meta"], hit["similarity"], monk_tone)
+        hit["score"] += environment_rules.score(hit["meta"], environment)
     return sorted(hits, key=lambda hit: hit["score"], reverse=True)
 
 
-def _eligible_products(skin_profile: SkinProfile) -> list[dict]:
+def _eligible_products(skin_profile: SkinProfile, environment: EnvironmentProfile | None = None) -> list[dict]:
     """Tone-ranked products for this profile, minus fragranced ones when the user wants fragrance-free."""
     if _collection is None:
         raise RuntimeError("Knowledge base not initialized; call init_collection() first.")
     embedding = _embed([build_query(skin_profile)])[0]
-    ranked = rank_products(embedding, skin_profile.monk_tone or None)
+    ranked = rank_products(embedding, skin_profile.monk_tone or None, environment)
     if skin_profile.fragrance_free:
         ranked = [hit for hit in ranked if hit["meta"]["fragrance_free"]]
     return ranked
@@ -298,9 +301,11 @@ def group_by_step(ranked: list[dict], per_step: int) -> dict[str, list[dict]]:
     return {step: hits for step, hits in groups.items() if hits}
 
 
-def retrieve_routine_candidates(skin_profile: SkinProfile, per_step: int = 2) -> dict[str, list[dict]]:
-    """Best tone-fit products per routine step: a primary pick plus alternatives to swap in."""
-    return group_by_step(_eligible_products(skin_profile), per_step)
+def retrieve_routine_candidates(
+    skin_profile: SkinProfile, per_step: int = 2, environment: EnvironmentProfile | None = None
+) -> dict[str, list[dict]]:
+    """Best tone- and climate-fit products per routine step: a primary pick plus alternatives to swap in."""
+    return group_by_step(_eligible_products(skin_profile, environment), per_step)
 
 
 def retrieve_for_question(question: str, routine_asins: list[str], top_k: int = 4) -> list[str]:

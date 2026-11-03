@@ -687,6 +687,111 @@
       vertical-align: middle;
     }
 
+    /* Climate and environment (environment.js) */
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+    .header-actions button { min-height: 44px; }
+    #settings-btn { display: grid; place-items: center; min-width: 44px; padding: 8px; }
+    .env-card {
+      align-self: stretch;
+      margin-left: 34px;
+      padding: 14px 16px;
+      background: var(--paper-light);
+      border: 2px dashed var(--sage-500);
+      border-radius: var(--radius-paper);
+      font-size: 14px;
+    }
+    .env-card h3 { margin: 0 0 6px; font-size: 17px; color: var(--navy-700); }
+    .env-card h4 { margin: 10px 0 2px; font-family: var(--font-hand); font-size: 19px; color: var(--terracotta-500); }
+    .env-optional { font-family: var(--font-hand); font-weight: 500; font-size: 18px; color: var(--ink-muted); }
+    .env-card p { margin: 0 0 10px; }
+    .env-lookup label { display: block; font-weight: 700; margin-bottom: 4px; }
+    .env-row { display: flex; gap: 8px; }
+    .env-row input {
+      flex: 1;
+      min-width: 0;
+      width: 0; /* let flex size it, so its default width never widens the page */
+      min-height: 44px;
+      padding: 8px 12px;
+      font: inherit;
+      border: 2px solid var(--ink);
+      border-radius: 12px 14px 12px 14px;
+      background: #fff;
+    }
+    .env-row input:focus-visible { outline: 3px solid var(--navy-500); outline-offset: 2px; }
+    .env-status:empty { display: none; }
+    .env-status { margin-top: 6px !important; color: var(--terracotta-700); font-weight: 600; }
+    .env-group { border: none; margin: 10px 0 0; padding: 0; min-width: 0; }
+    .env-group legend { font-weight: 700; padding: 0; margin-bottom: 4px; }
+    .env-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .env-chip { position: relative; }
+    /* Real radio buttons (keyboard and screen readers), drawn as chips. */
+    .env-chip input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .env-chip span {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      padding: 6px 14px;
+      border: 2px solid var(--sage-300);
+      border-radius: var(--radius-pill);
+      background: var(--sage-100);
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .env-chip span:hover { border-color: var(--sage-500); }
+    /* Checked: a check mark and a solid ink border, not just a color change. */
+    .env-chip input:checked + span { border-color: var(--ink); background: var(--sage-300); }
+    .env-chip input:checked + span::before { content: "✓ "; white-space: pre; }
+    .env-chip input:focus-visible + span { outline: 3px solid var(--navy-500); outline-offset: 2px; }
+    .env-detected { font-weight: 700; color: var(--navy-700); }
+    .env-place { font-weight: 400; color: var(--ink-muted); }
+    .env-correct summary { cursor: pointer; color: var(--terracotta-700); font-weight: 600; min-height: 44px; display: flex; align-items: center; }
+    .env-correct summary:focus-visible { outline: 3px solid var(--navy-500); outline-offset: 2px; }
+    .env-fine { margin-top: 10px !important; font-size: 12px; color: var(--ink-muted); }
+    .env-actions { display: flex; gap: 8px; margin-top: 10px; }
+    .env-actions button, .env-lookup button { min-height: 44px; }
+    .env-card button:focus-visible, .season-banner button:focus-visible, #settings-dialog button:focus-visible, #settings-btn:focus-visible {
+      outline: 3px solid var(--navy-500);
+      outline-offset: 3px;
+    }
+    .env-saved { margin: 0 !important; }
+    .season-banner {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding: 12px 16px;
+      background: var(--mustard-300);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-paper);
+      box-shadow: var(--shadow-paper);
+      font-weight: 600;
+    }
+    .season-banner[hidden] { display: none; }
+    .season-banner p { margin: 0; flex: 1 1 240px; }
+    .season-banner button { min-height: 44px; }
+    #settings-dialog h4 { margin: 18px 0 6px; }
+    #settings-dialog .setting-row { display: flex; align-items: flex-start; gap: 10px; min-height: 44px; }
+    #settings-dialog input[type="checkbox"] { width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--sage-700); flex: none; }
+    #settings-dialog input[type="checkbox"]:focus-visible { outline: 3px solid var(--navy-500); outline-offset: 2px; }
+    #settings-dialog .setting-row small { display: block; color: var(--ink-muted); font-size: 13px; }
+    #settings-dialog .settings-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    #settings-dialog .settings-actions button { min-height: 44px; }
+    .climate-tag {
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 1px 9px;
+      border: 1.5px dashed var(--navy-500);
+      border-radius: var(--radius-pill);
+      color: var(--navy-700);
+    }
+    .usage-climate { display: flex; gap: 4px; align-items: flex-start; margin: 4px 0 0; font-size: 12px; font-style: italic; }
+    .usage-climate svg { flex: none; margin-top: 2px; }
+
     /* Camera capture (camera.js) */
     .camera-btn {
       width: 100%;
@@ -813,6 +918,7 @@
       .eta { font-size: 18px; margin-bottom: 8px; }
       /* The drawer becomes a bottom sheet. */
       .usage-tab { right: 16px; bottom: 16px; }
+      .env-card { margin-left: 0; }
       /* The camera fills a phone screen, portrait first. */
       .camera-dialog {
         width: 100vw;
@@ -859,10 +965,23 @@
         <span class="tagline">your skin, thoughtfully</span>
       </div>
     </div>
-    <button type="button" class="secondary" id="reset-btn" title="Cancel any pending request and clear the photo, profile and chat">Start over</button>
+    <div class="header-actions">
+      <button type="button" class="secondary" id="settings-btn" aria-label="Settings" title="Settings">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <button type="button" class="secondary" id="reset-btn" title="Cancel any pending request and clear the photo, profile and chat">Start over</button>
+    </div>
   </header>
 
   <main>
+    <div class="season-banner" id="season-banner" role="region" aria-label="Seasonal update" hidden>
+      <p id="season-text"></p>
+      <button type="button" id="season-accept">Update</button>
+      <button type="button" class="secondary" id="season-dismiss">Not now</button>
+    </div>
     <section class="panel">
       <h2><span class="num">1</span>Your photo</h2>
       <p class="hint">Bare skin, natural daylight, facing the camera. JPEG, PNG, WEBP or GIF.</p>
@@ -1017,6 +1136,26 @@
     </section>
   </dialog>
 
+  <dialog id="settings-dialog" aria-labelledby="settings-title">
+    <div class="detail-head">
+      <h3 id="settings-title">Settings</h3>
+      <button type="button" class="icon" id="settings-close" aria-label="Close settings">×</button>
+    </div>
+    <h4>Your climate</h4>
+    <p id="settings-climate"></p>
+    <div class="settings-actions">
+      <button type="button" class="secondary" id="settings-edit-climate">Update my climate</button>
+      <button type="button" class="secondary danger" id="settings-clear">Clear my location and environment data</button>
+    </div>
+    <h4>Deeper lifestyle questions</h4>
+    <label class="setting-row">
+      <input type="checkbox" id="settings-lifestyle">
+      <span>Ask deeper lifestyle questions
+        <small>Optional extra questions for more personalized advice. Makes consultations longer.</small>
+      </span>
+    </label>
+  </dialog>
+
   <dialog id="detail-dialog" aria-labelledby="detail-name">
     <div class="detail-head">
       <div>
@@ -1032,6 +1171,10 @@
     <p id="detail-why"></p>
     <h4>On your skin tone</h4>
     <p id="detail-tone"></p>
+    <div id="detail-climate-wrap">
+      <h4>Why this suits your climate</h4>
+      <p id="detail-climate"></p>
+    </div>
     <h4>Key ingredients</h4>
     <div class="ingredients" id="detail-ingredients"></div>
     <div id="detail-not-good-wrap">
@@ -1068,6 +1211,7 @@
   </div>
 
   <script src="camera.js"></script>
+  <script src="environment.js"></script>
   <script>
     // Served by the backend at /app/ (phone testing over HTTPS): call the API on the same origin.
     const API_BASE = location.pathname.startsWith("/app/") ? location.origin : "http://localhost:8000";
@@ -1105,6 +1249,7 @@
       ratings: loadRatings(), // { asin: { stars, note } }, kept across sessions in this browser
       selected: new Set(),  // ASINs the user added to their routine; drives the "How to use" panel
       usageShown: false,    // the panel opens by itself on the first add only
+      envSkipped: false,    // the user skipped the climate card in this consultation
     };
 
     function loadRatings() {
@@ -1250,6 +1395,7 @@
         budget: null,
         selected: new Set(),
         usageShown: false,
+        envSkipped: false,
       });
       saveSelected();
       closeUsage();
@@ -1310,13 +1456,15 @@
 
     // --- Progress sidebar: what Dermalis still needs, and roughly how long until the routine ---
     const PROGRESS_STEPS = [
+      // Same order the consultant asks in (SYSTEM_PROMPT in conversation_service.py): budget comes last.
       { label: "Photo analyzed", done: (p) => p?.monk_tone > 0 },
+      { label: "Your climate", done: () => Boolean(DermalisEnvironment.load()) || state.envSkipped, optional: true },
       { label: "Main concerns", done: (p) => p?.confirmed_concerns.length > 0, answer: true },
-      { label: "Monthly budget", done: (p) => p?.budget_monthly != null, answer: true },
-      { label: "Fragrance preference", done: (p) => p?.fragrance_free != null, answer: true },
       { label: "Sensitivities", done: (p) => p?.allergies != null, answer: true },
+      { label: "Fragrance preference", done: (p) => p?.fragrance_free != null, answer: true },
       { label: "Products tried", done: (p) => p?.products_liked != null || p?.products_disliked != null, answer: true },
       { label: "Skin goals", done: (p) => p?.goals.length > 0, optional: true },
+      { label: "Monthly budget", done: (p) => p?.budget_monthly != null, answer: true },
       { label: "Routine built", done: () => state.complete },
     ];
 
@@ -1363,7 +1511,7 @@
       $("progress-tip").textContent = state.complete
         ? "Keep chatting! Ask me what an ingredient does, what order to apply things, or how long they last."
         : p
-          ? "Skin goals are optional. They just make it more personal."
+          ? "Climate and skin goals are optional. They just make it more personal."
           : "After your photo, I'll ask a few quick questions.";
     }
 
@@ -1388,11 +1536,12 @@
         ["Observed", p.observed_concerns.join(", ")],
         ["Concerns", p.confirmed_concerns.join(", ")],
         // null = not asked yet (hide the row); [] = asked, nothing to report.
+        ["Climate", DermalisEnvironment.describe(DermalisEnvironment.load())],
         ["Sensitivities", p.allergies == null ? "" : p.allergies.join(", ") || "none"],
+        ["Fragrance-free", p.fragrance_free == null ? "" : (p.fragrance_free ? "yes" : "no preference")],
         ["Works for you", (p.products_liked || []).join(", ")],
         ["Didn't work", (p.products_disliked || []).join(", ")],
         ["Budget", p.budget_monthly != null ? `$${p.budget_monthly} for the routine` : ""],
-        ["Fragrance-free", p.fragrance_free == null ? "" : (p.fragrance_free ? "yes" : "no preference")],
       ];
       for (const [label, value] of rows) {
         if (value === "" || value == null) continue;
@@ -1603,6 +1752,13 @@
       const tags = el("div", "ingredients");
       for (const tag of ingredientTags(rec)) tags.appendChild(el("span", "", tag));
       card.append(tags);
+      if (rec.climate_tag) {
+        // A short tag only; the explanation lives in Details.
+        const climate = el("div", "climate-tag", rec.climate_tag);
+        climate.insertAdjacentHTML("afterbegin", CLIMATE_ICON);
+        climate.title = "Suits your climate: see Details";
+        card.append(climate);
+      }
 
       const actions = el("div", "card-actions");
       const details = el("button", "secondary", "Details");
@@ -1745,6 +1901,8 @@
       $("detail-swap").hidden = !spare;
       $("detail-why").textContent = rec.why_recommended;
       $("detail-tone").textContent = rec.tone_note || "No tone-specific notes for this product.";
+      $("detail-climate").textContent = rec.climate_note || "";
+      $("detail-climate-wrap").hidden = !rec.climate_note;
       $("detail-link").href = amazonUrl(asin);
 
       const ingredients = $("detail-ingredients");
@@ -1894,6 +2052,12 @@
       if (rec.frequency) meta.appendChild(el("span", "usage-freq", rec.frequency));
       main.append(stamp, name, meta);
       if (rec.how_to_use) main.appendChild(el("p", "usage-how", rec.how_to_use));
+      if (rec.climate_note) {
+        const note = el("p", "usage-climate");
+        note.insertAdjacentHTML("afterbegin", CLIMATE_ICON);
+        note.append(el("span", "", rec.climate_note));
+        main.appendChild(note);
+      }
       item.appendChild(main);
       return item;
     }
@@ -1943,12 +2107,13 @@
       const controller = (state.controller = new AbortController());
       const spinner = showSpinner("Analyzing your photo…");
       try {
-        const data = await postJSON("/analyze", { image_base64: state.imageDataUrl }, controller.signal);
+        const data = await postJSON("/analyze", { image_base64: state.imageDataUrl, ...DermalisEnvironment.requestFields() }, controller.signal);
         spinner.remove();
         state.skinProfile = data.skin_profile;
         renderProfile(state.skinProfile);
         addMessage("assistant", data.opening_message);
         state.history.push({ role: "assistant", content: data.opening_message });
+        if (state.skinProfile.monk_tone > 0 && !DermalisEnvironment.load() && !state.envSkipped) showClimateCard();
       } catch (err) {
         if (controller.signal.aborted) return; // reset while waiting; page is already cleared
         spinner.remove();
@@ -1987,6 +2152,7 @@
           user_message: text,
           // Once the routine exists, send what's on screen so follow-ups are about it.
           routine: state.complete ? visibleRecs().map((s) => s.rec) : null,
+          ...DermalisEnvironment.requestFields(),
         }, controller.signal);
         spinner.remove();
         state.history.push({ role: "user", content: text }, { role: "assistant", content: data.assistant_response });
@@ -2010,6 +2176,82 @@
           updateControls();
         }
       }
+    });
+
+    // --- Climate and environment (environment.js) ---
+    const CLIMATE_ICON = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3c3.5 4.2 6 7.6 6 10.7A6 6 0 0 1 6 13.7C6 10.6 8.5 7.2 12 3z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>';
+
+    DermalisEnvironment.init({
+      apiBase: API_BASE,
+      onChange: () => {
+        renderProfile(state.skinProfile);
+        renderProgress();
+        renderSettings();
+      },
+    });
+
+    // The optional climate card, in the chat under the latest message.
+    function showClimateCard() {
+      document.querySelector(".env-card")?.remove();
+      $("empty-chat")?.remove();
+      const card = DermalisEnvironment.buildCard({
+        onDone: () => {
+          state.envSkipped = false;
+          showToast("Climate saved. Suggestions will take it into account.");
+        },
+        onSkip: () => {
+          state.envSkipped = true;
+          renderProgress();
+        },
+      });
+      messages.appendChild(card);
+      card.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+
+    const settingsDialog = $("settings-dialog");
+    function renderSettings() {
+      const env = DermalisEnvironment.load();
+      $("settings-climate").textContent = env
+        ? DermalisEnvironment.describe(env)
+        : "Not set. Add it to tailor suggestions to your climate and the season.";
+      $("settings-clear").hidden = !env;
+      $("settings-lifestyle").checked = DermalisEnvironment.lifestyleEnabled();
+    }
+    $("settings-btn").addEventListener("click", () => {
+      renderSettings();
+      settingsDialog.showModal();
+    });
+    $("settings-close").addEventListener("click", () => settingsDialog.close());
+    settingsDialog.addEventListener("click", (e) => {
+      if (e.target === settingsDialog) settingsDialog.close();
+    });
+    $("settings-edit-climate").addEventListener("click", () => {
+      settingsDialog.close();
+      showClimateCard();
+      document.querySelector(".env-card .env-lookup input, .env-card > .env-group input:checked, .env-card > .env-group input")?.focus();
+    });
+    $("settings-clear").addEventListener("click", () => {
+      DermalisEnvironment.clear();
+      $("season-banner").hidden = true;
+      showToast("Location and environment data cleared.");
+    });
+    $("settings-lifestyle").addEventListener("change", (e) => DermalisEnvironment.setLifestyle(e.target.checked));
+
+    // One gentle seasonal prompt on open; "Not now" keeps it quiet for 30 days.
+    DermalisEnvironment.seasonalCheck().then((prompt) => {
+      if (!prompt) return;
+      $("season-text").textContent = prompt.message;
+      $("season-banner").hidden = false;
+      $("season-accept").onclick = () => {
+        $("season-banner").hidden = true;
+        if (prompt.edit) return showClimateCard();
+        prompt.apply();
+        showToast("Updated for the season. Your next routine will reflect it.");
+      };
+      $("season-dismiss").onclick = () => {
+        DermalisEnvironment.dismissSeasonal();
+        $("season-banner").hidden = true;
+      };
     });
 
     renderProgress();

@@ -1,4 +1,6 @@
-from pydantic import BaseModel, Field
+from typing import Any, Literal
+
+from pydantic import BaseModel, Field, ValidationError, field_validator, model_validator
 
 
 class SkinProfile(BaseModel):
@@ -18,16 +20,60 @@ class SkinProfile(BaseModel):
     products_disliked: list[str] | None = None
 
 
+class LifestyleAnswers(BaseModel):
+    """One optional lifestyle module's answers (see LIFESTYLE_MODULES in frontend/environment.js)."""
+    answers: dict[str, Any] = Field(default_factory=dict)
+    context: str = Field("", max_length=500)  # the module's own plain-language summary for the consultant
+
+
+class EnvironmentProfile(BaseModel):
+    """Where and how the user lives, as far as it can affect skin. Every field is optional."""
+    place: str | None = Field(None, max_length=120)  # "Denver, Colorado, United States"; never sent to the LLM
+    # Rounded to 2 decimals (about 1 km); never more precise.
+    lat: float | None = Field(None, ge=-90, le=90)
+    lon: float | None = Field(None, ge=-180, le=180)
+    season: Literal["winter", "spring", "summer", "autumn"] | None = None
+    climate_label: Literal["hot_humid", "hot_dry", "mild", "cold_dry", "cold_humid"] | None = None
+    avg_temp_c: float | None = None
+    avg_humidity: float | None = Field(None, ge=0, le=100)
+    uv_index_max: float | None = Field(None, ge=0, le=20)
+    indoor: Literal["heated", "ac", "mixed"] | None = None
+    outdoor_time: Literal["under_30m", "30m_2h", "over_2h"] | None = None
+    sunscreen_habit: Literal["daily", "sometimes", "rarely"] | None = None  # "rarely" = rarely or never
+    travels: bool | None = None
+    source: Literal["lookup", "manual"] | None = None
+    updated_at: str | None = None
+    lifestyle: dict[str, LifestyleAnswers] | None = None
+
+    @field_validator("lat", "lon")
+    @classmethod
+    def _round(cls, value: float | None) -> float | None:
+        return None if value is None else round(value, 2)
+
+
+class OptionalEnvironment(BaseModel):
+    """Mixin for requests: `environment` is optional, and a malformed one is dropped instead of failing the request."""
+    environment: EnvironmentProfile | None = None
+
+    @field_validator("environment", mode="wrap")
+    @classmethod
+    def _lenient(cls, value, handler):
+        try:
+            return handler(value)
+        except ValidationError:
+            return None
+
+
 class ConversationTurn(BaseModel):
     role: str
     content: str
 
 
-class AnalysisRequest(BaseModel):
+class AnalysisRequest(OptionalEnvironment):
     image_base64: str
 
 
-class ChatRequest(BaseModel):
+class ChatRequest(OptionalEnvironment):
     conversation_history: list[ConversationTurn]
     skin_profile: SkinProfile
     user_message: str
@@ -55,6 +101,9 @@ class RecommendationResponse(BaseModel):
     price: str = ""
     price_usd: float = 0
     targets: list[str] = Field(default_factory=list)
+    # From environment_rules, by code: a 1-3 word card tag and one plain sentence for Details.
+    climate_tag: str = ""
+    climate_note: str = ""
     # Alternatives are hidden until the user removes the primary pick for that step.
     is_alternative: bool = False
     # The whole step was dropped to keep the routine within budget.
@@ -85,6 +134,31 @@ class ChatResponse(BaseModel):
     recommendations: list[RecommendationResponse] = Field(default_factory=list)
     budget: BudgetSummary | None = None
     is_complete: bool = False
+
+
+class EnvironmentLookupRequest(BaseModel):
+    """Either a city or postal code (first lookup), or saved rounded coordinates (seasonal refresh)."""
+    query: str | None = Field(None, min_length=2, max_length=100)
+    lat: float | None = Field(None, ge=-90, le=90)
+    lon: float | None = Field(None, ge=-180, le=180)
+
+    @model_validator(mode="after")
+    def _one_of(self):
+        if not self.query and (self.lat is None or self.lon is None):
+            raise ValueError("Send a query, or both lat and lon.")
+        return self
+
+
+class EnvironmentLookupResponse(BaseModel):
+    place: str | None  # None for a coordinates refresh; the client keeps its saved place
+    lat: float
+    lon: float
+    season: str | None  # None in the tropics
+    climate_label: str
+    avg_temp_c: float
+    avg_humidity: float
+    uv_index_max: float
+    summary: str
 
 
 class FitBudgetRequest(BaseModel):

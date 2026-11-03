@@ -55,6 +55,47 @@ The thresholds are named constants at the top of `frontend/camera.js`: `MIN_BRIG
 
 The defaults are deliberately lenient at both ends, so neither deep nor very light skin is flagged just for its tone. A flat swatch of each of the 10 Monk reference colours passes. They have **not** been validated on real faces: before relying on them, record the debug readings for people across the full Monk scale in good and poor light, then adjust.
 
+## Climate and environment
+After the photo is analyzed, an optional "Your climate" card appears in the chat. The user can type a city or ZIP code, or choose a climate, then answer four single-tap questions (indoor heating/AC, time outdoors, sunscreen habit, travel), or skip. To edit or clear it later, use Settings (the gear icon).
+
+**What is collected and where it lives**
+- **City or ZIP code:** sent once to our backend (`POST /environment/lookup`), which asks Open-Meteo (no API key) for the place and the last 14 days of temperature, humidity, dew point and UV. Coordinates are rounded to 2 decimals (about 1 km).
+- **The profile:** the place name, rounded coordinates, climate label, season, averages and the four answers are saved **only in this browser** (`localStorage["dermalis.environment"]`). The backend stores nothing.
+- **What gets sent:** `/analyze` and `/chat` receive an optional `environment` field with the climate facts and answers, but **not** the place or coordinates. The LLM prompts never include the place either.
+- **Settings:** `localStorage["dermalis.settings"]` holds the lifestyle toggle and when the seasonal prompt was last dismissed.
+- **Clearing:** Settings → "Clear my location and environment data" removes the profile, any lifestyle answers and the seasonal timer.
+- **Logging:** nothing logs places or coordinates. The lookup is a POST, so they don't appear in access-log URLs either.
+- **Old clients:** they keep working. `environment` is optional, and a malformed one is dropped rather than failing the request.
+
+**How it changes suggestions** (rules: `backend/services/environment_rules.py`)
+- **Dry air** (cold and dry, hot and dry, under 40% humidity, or heated indoors): richer, barrier-supporting moisturizers and gentle cleansers rank higher. Suggests a little extra moisturizer at night, and going easy on exfoliating.
+- **Hot and humid:** lighter textures rank higher, with "a thin layer is usually enough".
+- **Strong sun** (UV 6+ or over 2 hours outdoors): sunscreen gets a "Sun-ready" note about reapplying. A "rarely" sunscreen habit gets a gentle nudge from the consultant.
+- **Air-conditioning or frequent travel:** consultant guidance only.
+
+Each rule can give a product a short card tag, plus one plain sentence in Details and the How-to-use panel. It can also nudge ranking slightly using the KB `Targets` field, and adds guidance to the consultant's prompts. Climate is never described as a cause.
+
+To tune the rules, edit the thresholds at the top of the file (dew point is used for dry vs humid) or add a `Rule` to `RULES`.
+
+**Seasonal refresh.** On page open, if the saved season has turned over (computed locally) or the profile is over 60 days old, the page re-checks the climate through our backend using the saved rounded coordinates. It then shows one prompt, e.g. "Winter's here and it's gotten drier where you are. Want a seasonal routine update?". "Not now" keeps it quiet for 30 days. Seasons aren't used in the tropics.
+
+**Adding a lifestyle module.** Settings has "Deeper lifestyle questions" (off by default). Modules are registered in `LIFESTYLE_MODULES` in `frontend/environment.js`:
+- Each module is `{ id, title, questions, toContext(answers) }`, and `questions` uses the same shape as the climate questions.
+- Only modules with questions are asked, and only while the setting is on.
+- Answers are sent as `environment.lifestyle[id] = { answers, context }`, and the backend adds `context` (capped at 500 characters) to the consultant's prompt.
+- Only a placeholder is registered today.
+
+**Manual test checklist**
+- **Lookup:** "Denver" or "80202" shows "Currently … where you are, UV is …". Answer the questions, then Save; the chat request carries `environment` without place, lat or lon.
+- **Not found:** "zzqqxx" shows the not-found message with a retry. UK postcodes aren't found by Open-Meteo, so use the climate chips.
+- **Weather API down** (stop your network, or stub a 503): shows "Choose your climate below" and onboarding continues.
+- **Manual:** pick a climate chip, answer, Save. Also try "Not right? Choose your climate" after a lookup.
+- **Skip:** the card closes, the checklist item is marked done, and recommendations work without `environment`.
+- **Saved profile:** start over and analyze again; no card appears, and `/analyze` carries `environment`.
+- **Clear data:** Settings → Clear; `localStorage` has no `dermalis.environment`.
+- **Seasonal prompt:** set `updated_at` to 70 days ago and `season` to last season in the saved profile, then reload. Click "Not now", reload, and confirm nothing shows.
+- **Old clients:** `pytest tests/test_environment.py` covers requests with no `environment` field.
+
 ## Monk tone rules
 Product files declare `Monk tones best`, `Irritation potential`, `White cast` (sunscreens) and `Targets`. `backend/services/tone_rules.py` uses them to exclude and re-rank products per tone band (light 1-3, medium 4-6, deep 7-10). Tune the boosts and penalties at the top of that file.
 

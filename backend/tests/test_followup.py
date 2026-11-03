@@ -35,6 +35,6 @@ def test_followup_answers_without_rebuilding(monkeypatch):
 def test_without_routine_uses_profile_conversation(monkeypatch):
     monkeypatch.setattr(rag_service, "retrieve_relevant_products", lambda profile: [])
     monkeypatch.setattr(
-        conversation_service, "get_next_response", lambda h, p, m, c: ("Any allergies?", p, False)
+        conversation_service, "get_next_response", lambda h, p, m, c, env=None: ("Any allergies?", p, False)
     )
     assert _post(None).json()["assistant_response"] == "Any allergies?"
