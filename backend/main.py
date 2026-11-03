@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from dotenv import load_dotenv
 
@@ -6,6 +7,7 @@ load_dotenv()
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from openai import OpenAIError
 
 from models.schemas import (
@@ -126,3 +128,8 @@ def _followup(request: ChatRequest) -> ChatResponse:
         raise HTTPException(status_code=502, detail=f"Chat failed: {e}")
     # No recommendations: the client keeps showing the routine it already has.
     return ChatResponse(assistant_response=reply, updated_skin_profile=request.skin_profile, is_complete=True)
+
+
+# The page itself, on the same origin as the API, so one HTTPS URL is enough to test the
+# camera on a phone (see "Camera capture" in README.md). Mounted last so it can't shadow a route.
+app.mount("/app", StaticFiles(directory=Path(__file__).resolve().parent.parent / "frontend", html=True), name="app")

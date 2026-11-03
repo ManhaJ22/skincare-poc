@@ -687,6 +687,112 @@
       vertical-align: middle;
     }
 
+    /* Camera capture (camera.js) */
+    .camera-btn {
+      width: 100%;
+      min-height: 48px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--navy-700);
+    }
+    .camera-btn:hover:not(:disabled) { background: var(--navy-500); }
+    .camera-btn[hidden], .camera-dialog [hidden] { display: none !important; }
+    .camera-note { font-size: 13px; color: var(--ink-muted); margin: 0 0 12px; }
+    .dropzone:focus-visible,
+    .camera-btn:focus-visible,
+    .camera-dialog button:focus-visible,
+    .msg .retry:focus-visible {
+      outline: 3px solid var(--navy-500);
+      outline-offset: 3px;
+    }
+    .msg .retry { display: block; margin-top: 8px; padding: 6px 14px; min-height: 44px; }
+
+    .camera-dialog { width: min(460px, calc(100vw - 32px)); padding: 16px 18px 18px; }
+    .camera-dialog button { min-height: 44px; min-width: 44px; }
+    .cam-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .cam-head h3 { margin: 0; }
+    .cam-screen > p { font-size: 15px; margin: 0 0 14px; }
+    .cam-screen .cam-actions { display: flex; flex-direction: column; gap: 10px; }
+    .cam-frame {
+      position: relative;
+      height: min(60vh, 540px);
+      height: min(60dvh, 540px);
+      aspect-ratio: 3 / 4;
+      max-width: 100%;
+      margin: 0 auto 10px;
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-paper);
+      overflow: hidden;
+      background: var(--navy-700);
+    }
+    .cam-frame video,
+    .cam-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .cam-frame img { object-fit: contain; }
+    /* Only the live preview is mirrored; the captured photo is not. */
+    .mirrored { transform: scaleX(-1); }
+    .cam-guide { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .cam-paused {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: rgba(43, 58, 85, 0.75);
+    }
+    .cam-tip { font-size: 14px; color: var(--ink-muted); text-align: center; margin: 0 0 8px; }
+    .cam-status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 40px;
+      margin: 0 0 10px;
+      padding: 6px 12px;
+      border-radius: 12px 16px 12px 14px;
+      font-weight: 700;
+      font-size: 14px;
+      text-align: left;
+    }
+    .cam-status svg { flex: none; }
+    .cam-status[data-tone="good"] { background: var(--sage-100); color: var(--sage-700); }
+    .cam-status[data-tone="warn"] { background: #FBE9E2; color: var(--terracotta-700); }
+    .cam-status[data-tone="info"] { background: var(--clay); color: var(--ink-muted); }
+    .cam-controls { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; }
+    .cam-controls .cam-flip { justify-self: start; display: grid; place-items: center; padding: 8px; border-radius: 50%; }
+    .cam-shutter-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .cam-shutter {
+      width: 72px;
+      height: 72px;
+      padding: 0;
+      border: 3px solid var(--ink);
+      border-radius: 50%;
+      background: var(--terracotta-500);
+      box-shadow: inset 0 0 0 5px var(--paper-light), 2px 3px 0 var(--ink);
+    }
+    .cam-shutter:hover:not(:disabled) { box-shadow: inset 0 0 0 5px var(--paper-light), 3px 4px 0 var(--ink); }
+    /* Poor light: dashed ring, mustard fill and a text hint (never colour alone). */
+    .cam-shutter.poor { border-style: dashed; background: var(--mustard-500); }
+    .cam-shutter.poor:hover:not(:disabled) { background: var(--mustard-300); }
+    .cam-capture-hint { font-family: var(--font-hand); font-size: 17px; line-height: 1.1; color: var(--terracotta-700); }
+    #cam-review-actions { flex-direction: row; }
+    #cam-review-actions button { flex: 1; }
+    .cam-debug {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      right: 6px;
+      padding: 6px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.65);
+      color: #fff;
+      font: 11px/1.35 ui-monospace, Consolas, monospace;
+      pointer-events: none;
+    }
+    .cam-debug pre { margin: 0 0 4px; white-space: pre-wrap; font: inherit; }
+    .cam-debug canvas { display: block; width: 96px; border: 1px solid #fff; }
+
     @media (max-width: 1080px) {
       main { grid-template-columns: 270px minmax(0, 1fr); }
       /* Progress moves above the chat as a slim sticky strip. */
@@ -707,6 +813,19 @@
       .eta { font-size: 18px; margin-bottom: 8px; }
       /* The drawer becomes a bottom sheet. */
       .usage-tab { right: 16px; bottom: 16px; }
+      /* The camera fills a phone screen, portrait first. */
+      .camera-dialog {
+        width: 100vw;
+        max-width: none;
+        height: 100vh;
+        height: 100dvh;
+        max-height: none;
+        margin: 0;
+        border: none;
+        border-radius: 0;
+        padding: 12px 16px calc(14px + env(safe-area-inset-bottom));
+      }
+      .cam-frame { height: min(56vh, calc((100vw - 36px) * 4 / 3)); height: min(56dvh, calc((100vw - 36px) * 4 / 3)); }
       .usage-panel {
         top: auto;
         left: 0;
@@ -747,8 +866,16 @@
     <section class="panel">
       <h2><span class="num">1</span>Your photo</h2>
       <p class="hint">Bare skin, natural daylight, facing the camera. JPEG, PNG, WEBP or GIF.</p>
-      <label class="dropzone" for="file-input" id="dropzone">
-        <span id="drop-text">Click to upload a photo</span>
+      <button type="button" class="camera-btn" id="camera-btn">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 8h3l2-3h6l2 3h3v11H4z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="12" cy="13" r="3.5" stroke="currentColor" stroke-width="2"/>
+        </svg>
+        Take a photo
+      </button>
+      <p class="camera-note" id="camera-note" hidden></p>
+      <label class="dropzone" for="file-input" id="dropzone" tabindex="0" role="button" aria-label="Choose a photo from your library">
+        <span id="drop-text">Choose from library</span>
       </label>
       <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/gif">
       <button id="analyze-btn" disabled>Analyze my skin</button>
@@ -820,6 +947,76 @@
     </details>
   </section>
 
+  <dialog id="camera-dialog" class="camera-dialog" aria-labelledby="camera-title">
+    <div class="cam-head">
+      <h3 id="camera-title">Take a photo</h3>
+      <button type="button" class="icon" id="cam-close" aria-label="Close camera">×</button>
+    </div>
+
+    <section class="cam-screen" id="cam-intro">
+      <p>Dermalis uses your camera to analyze your skin. Photos are never shared with other users.</p>
+      <div class="cam-actions">
+        <button type="button" id="cam-start">Turn on camera</button>
+        <button type="button" class="secondary" data-cam-library>Choose from library</button>
+      </div>
+    </section>
+
+    <section class="cam-screen" id="cam-error" hidden>
+      <p id="cam-error-text" role="alert"></p>
+      <div class="cam-actions" id="cam-error-actions">
+        <button type="button" id="cam-retry">Try again</button>
+        <button type="button" class="secondary" id="cam-error-library" data-cam-library>Choose from library</button>
+      </div>
+    </section>
+
+    <section class="cam-screen" id="cam-live" hidden>
+      <div class="cam-frame">
+        <video id="cam-video" autoplay muted playsinline></video>
+        <!-- Guide only: never drawn onto the photo. camera.js sizes both ellipses from OVAL. -->
+        <svg class="cam-guide" viewBox="0 0 300 400" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <mask id="cam-oval-mask">
+              <rect width="300" height="400" fill="#fff"/>
+              <ellipse id="cam-oval-hole" fill="#000"/>
+            </mask>
+          </defs>
+          <rect width="300" height="400" fill="rgba(43,58,85,0.45)" mask="url(#cam-oval-mask)"/>
+          <ellipse id="cam-oval-line" fill="none" stroke="#FBF7F0" stroke-width="3" stroke-dasharray="10 7" vector-effect="non-scaling-stroke"/>
+        </svg>
+        <div class="cam-debug" id="cam-debug" hidden>
+          <pre id="cam-debug-text"></pre>
+          <canvas id="cam-debug-canvas"></canvas>
+        </div>
+        <div class="cam-paused" id="cam-paused" hidden>
+          <button type="button" id="cam-resume">Resume camera</button>
+        </div>
+      </div>
+      <p class="cam-tip">Face a window or bright, even light. Remove glasses. Keep your face inside the oval.</p>
+      <p class="cam-status" id="cam-status" aria-live="polite"></p>
+      <div class="cam-controls">
+        <button type="button" class="secondary cam-flip" id="cam-flip" aria-label="Switch between front and back camera" hidden>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 9a8 8 0 0 1 14-3l2 2M20 15a8 8 0 0 1-14 3l-2-2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M20 4v4h-4M4 20v-4h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="cam-shutter-wrap">
+          <button type="button" class="cam-shutter" id="cam-capture" aria-label="Take photo" disabled></button>
+          <span class="cam-capture-hint" id="cam-capture-hint" hidden>lighting could be better</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="cam-screen" id="cam-review" hidden>
+      <div class="cam-frame"><img id="cam-photo" alt="The photo you just took"></div>
+      <p class="cam-status" id="cam-review-status" aria-live="polite"></p>
+      <div class="cam-actions" id="cam-review-actions">
+        <button type="button" id="cam-use">Use this photo</button>
+        <button type="button" class="secondary" id="cam-retake">Retake</button>
+      </div>
+    </section>
+  </dialog>
+
   <dialog id="detail-dialog" aria-labelledby="detail-name">
     <div class="detail-head">
       <div>
@@ -870,8 +1067,10 @@
     <button type="button" class="link" id="toast-undo">Undo</button>
   </div>
 
+  <script src="camera.js"></script>
   <script>
-    const API_BASE = "http://localhost:8000";
+    // Served by the backend at /app/ (phone testing over HTTPS): call the API on the same origin.
+    const API_BASE = location.pathname.startsWith("/app/") ? location.origin : "http://localhost:8000";
     const MAX_IMAGE_SIDE = 1024;
     // Official Monk Skin Tone Scale reference colors (skintone.google), index = tone.
     const MONK_HEX = [null, "#f6ede4", "#f3e7db", "#f7ead0", "#eadaba", "#d7bd96",
@@ -967,9 +1166,8 @@
       });
     }
 
-    fileInput.addEventListener("change", async () => {
-      const file = fileInput.files[0];
-      if (!file) return;
+    // Library picks and camera photos both go through here, so /analyze gets the same JPEG data URL.
+    async function usePhoto(file) {
       try {
         state.imageDataUrl = await loadResizedImage(file);
         const dropzone = $("dropzone");
@@ -979,10 +1177,39 @@
         preview.alt = "Uploaded photo preview";
         dropzone.appendChild(preview);
         updateControls();
+        return true;
       } catch (err) {
         addMessage("error", err.message);
+        return false;
       }
+    }
+
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      if (file) usePhoto(file);
     });
+    // The dropzone is a <label>; make it work from the keyboard too.
+    $("dropzone").addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      e.preventDefault();
+      fileInput.click();
+    });
+
+    // --- Camera (camera.js): the main way to take the photo; the library stays as a fallback ---
+    if (!DermalisCamera.supported) {
+      $("camera-btn").hidden = true;
+      $("camera-note").hidden = false;
+      $("camera-note").textContent = DermalisCamera.insecure
+        ? "The camera needs HTTPS or localhost, so choose a photo from your library."
+        : "This browser can't open the camera, so choose a photo from your library.";
+    }
+    $("camera-btn").addEventListener("click", () => DermalisCamera.open({
+      onAccept: async (blob) => {
+        const ok = await usePhoto(new File([blob], "photo.jpg", { type: "image/jpeg" }));
+        if (ok && !state.busy) analyzePhoto();
+      },
+      onLibrary: () => fileInput.click(),
+    }));
 
     // --- UI helpers ---
     function addMessage(role, text) {
@@ -1704,7 +1931,8 @@
     }
 
     // --- Step 1: analyze photo ---
-    analyzeBtn.addEventListener("click", async () => {
+    async function analyzePhoto() {
+      if (state.busy || !state.imageDataUrl) return;
       // Re-analyzing starts a fresh consultation.
       messages.innerHTML = "";
       $("recommendations").hidden = true;
@@ -1724,7 +1952,13 @@
       } catch (err) {
         if (controller.signal.aborted) return; // reset while waiting; page is already cleared
         spinner.remove();
-        addMessage("error", `Couldn't analyze the photo: ${err.message}. Is the backend running on ${API_BASE}?`);
+        const error = addMessage("error", `Couldn't analyze the photo: ${err.message}. Is the backend running on ${API_BASE}?`);
+        const retry = document.createElement("button");
+        retry.type = "button";
+        retry.className = "secondary retry";
+        retry.textContent = "Try again";
+        retry.addEventListener("click", analyzePhoto);
+        error.append(retry);
       } finally {
         if (!controller.signal.aborted) {
           state.controller = null;
@@ -1732,7 +1966,8 @@
           updateControls();
         }
       }
-    });
+    }
+    analyzeBtn.addEventListener("click", analyzePhoto);
 
     // --- Step 2: chat ---
     $("chat-form").addEventListener("submit", async (e) => {
