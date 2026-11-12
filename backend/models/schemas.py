@@ -71,6 +71,8 @@ class ConversationTurn(BaseModel):
 
 class AnalysisRequest(OptionalEnvironment):
     image_base64: str
+    # "fairface" is the batch-testing prompt (scripts/fairface_harness.py); the app always uses "app".
+    prompt: Literal["app", "fairface"] = "app"
 
 
 class ChatRequest(OptionalEnvironment):
@@ -126,6 +128,7 @@ class BudgetSummary(BaseModel):
 class AnalysisResponse(BaseModel):
     skin_profile: SkinProfile
     opening_message: str
+    vision_confidence: str | None = None  # "high" | "medium" | "low" | "none"; fairface prompt only
 
 
 class ChatResponse(BaseModel):
@@ -159,6 +162,16 @@ class EnvironmentLookupResponse(BaseModel):
     avg_humidity: float
     uv_index_max: float
     summary: str
+
+
+class RecommendationsRequest(OptionalEnvironment):
+    """A complete profile, straight to a routine, with no conversation (used by the FairFace harness)."""
+    skin_profile: SkinProfile
+
+
+class RecommendationsResponse(BaseModel):
+    recommendations: list[RecommendationResponse]
+    budget: BudgetSummary | None = None
 
 
 class FitBudgetRequest(BaseModel):

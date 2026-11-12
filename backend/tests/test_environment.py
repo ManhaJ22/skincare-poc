@@ -204,7 +204,8 @@ def test_chat_passes_environment_and_old_clients_work(monkeypatch):
 
 def test_analyze_passes_environment(monkeypatch):
     seen = []
-    monkeypatch.setattr(vision_service, "analyze_skin_photo", lambda image: SkinProfile(monk_tone=6))
+    monkeypatch.setattr(vision_service, "analyze_photo",
+                        lambda image, prompt="app": vision_service.VisionResult(SkinProfile(monk_tone=6)))
     monkeypatch.setattr(conversation_service, "get_opening_message", lambda p, env=None: seen.append(env) or "Hi!")
     client = TestClient(main.app)
 

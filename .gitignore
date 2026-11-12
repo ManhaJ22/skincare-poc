@@ -3,3 +3,8 @@
 images/
 __pycache__/
 *.pyc
+fairface_images/
+utk_images/
+test-images/
+results.json
+results_dashboard.html

@@ -20,6 +20,8 @@ from models.schemas import (
     EnvironmentProfile,
     FitBudgetRequest,
     FitBudgetResponse,
+    RecommendationsRequest,
+    RecommendationsResponse,
     SkinProfile,
 )
 from services import budget, conversation_service, environment, rag_service, vision_service
@@ -75,10 +77,13 @@ def health():
 @app.post("/analyze", response_model=AnalysisResponse)
 def analyze(request: AnalysisRequest):
     try:
-        profile = vision_service.analyze_skin_photo(request.image_base64)
+        result = vision_service.analyze_photo(request.image_base64, request.prompt)
     except OpenAIError as e:
         raise HTTPException(status_code=502, detail=f"Image analysis failed: {e}")
-    return AnalysisResponse(skin_profile=profile, opening_message=build_opening_message(profile, request.environment))
+    profile = result.profile
+    # Batch testing never shows the greeting: skip that LLM call.
+    opening = _fallback_opening(profile) if request.prompt == "fairface" else build_opening_message(profile, request.environment)
+    return AnalysisResponse(skin_profile=profile, opening_message=opening, vision_confidence=result.confidence)
 
 
 @app.post("/chat", response_model=ChatResponse)
@@ -92,13 +97,7 @@ def chat(request: ChatRequest):
         )
         recommendations, budget_summary = [], None
         if is_ready:
-            candidates = rag_service.retrieve_routine_candidates(
-                profile, per_step=CANDIDATES_PER_STEP, environment=request.environment
-            )
-            recommendations = conversation_service.recommend(profile, candidates, request.environment)
-            recommendations, budget_summary = budget.fit_routine(
-                recommendations, profile.budget_monthly, profile.confirmed_concerns, rag_service.typical_routine_costs()
-            )
+            recommendations, budget_summary = _build_routine(profile, request.environment)
     except OpenAIError as e:
         raise HTTPException(status_code=502, detail=f"Chat failed: {e}")
 
@@ -111,7 +110,26 @@ def chat(request: ChatRequest):
     )
 
 
-@app.post("/environment/lookup", response_model=EnvironmentLookupResponse)
+def _build_routine(profile: SkinProfile, environment: EnvironmentProfile | None):
+    """Profile -> budget-fitted routine: ranked candidates per step, the LLM write-up, then the budget fit."""
+    candidates = rag_service.retrieve_routine_candidates(profile, per_step=CANDIDATES_PER_STEP, environment=environment)
+    recommendations = conversation_service.recommend(profile, candidates, environment)
+    return budget.fit_routine(
+        recommendations, profile.budget_monthly, profile.confirmed_concerns, rag_service.typical_routine_costs()
+    )
+
+
+@app.post("/recommendations", response_model=RecommendationsResponse)
+def recommendations(request: RecommendationsRequest):
+    """A complete profile straight to a routine, skipping the consultation (batch testing, e.g. scripts/fairface_harness.py)."""
+    try:
+        recs, summary = _build_routine(request.skin_profile, request.environment)
+    except OpenAIError as e:
+        raise HTTPException(status_code=502, detail=f"Recommendation failed: {e}")
+    return RecommendationsResponse(recommendations=recs, budget=summary)
+
+
+@app.post("/environment/lookup",response_model=EnvironmentLookupResponse)
 def environment_lookup(request: EnvironmentLookupRequest):
     """City or postal code -> climate summary. POST so the place never shows up in access-log URLs."""
     try:

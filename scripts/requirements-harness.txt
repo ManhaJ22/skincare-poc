@@ -1,0 +1,5 @@
+httpx
+tqdm
+Pillow
+mediapipe
+numpy

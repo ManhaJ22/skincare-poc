@@ -42,6 +42,7 @@ The camera turns off when the dialog closes, a photo is taken, or the page is hi
 
 Phones only allow the camera over HTTPS (desktop browsers also allow `localhost`). The backend serves the page at `/app/`, and the page then calls the API on the same origin, so one HTTPS URL covers both.
 - **Quickest: a tunnel.** Run `cloudflared tunnel --url http://localhost:8000` and open `https://<random>.trycloudflare.com/app/` on the phone. Photos then pass through Cloudflare, so use it for testing only.
+- **Or ngrok** (free account; run `ngrok config add-authtoken <token>` once): `ngrok http 8000 --basic-auth "dermalis:<password>"`, then open `https://<random>.ngrok-free.dev/app/`. The password stops anyone who finds the URL from spending your OpenAI credits. On the phone, tap "Visit Site" once on ngrok's warning page; the page's own API calls then work.
 - **On your LAN, with no third party:**
   1. Run `mkcert -install && mkcert 192.168.x.x`, then `cd backend && uvicorn main:app --host 0.0.0.0 --ssl-keyfile ../192.168.x.x-key.pem --ssl-certfile ../192.168.x.x.pem`.
   2. Open `https://192.168.x.x:8000/app/`.
