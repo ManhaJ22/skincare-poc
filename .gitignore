@@ -10,3 +10,5 @@ results.json
 results_dashboard.html
 chroma_db/
 backend/data/
+test-images/*.tar.gz
+test-images/*.gz
