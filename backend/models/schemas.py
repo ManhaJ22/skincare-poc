@@ -12,7 +12,8 @@ class SkinProfile(BaseModel):
     # None means "not asked yet", which is distinct from a real [] / 0 / False answer.
     allergies: list[str] | None = None
     budget_monthly: int | None = None
-    goals: list[str] = Field(default_factory=list)
+    # None until the goals question has been asked; [] means asked, with nothing specific (optional).
+    goals: list[str] | None = None
     fragrance_free: bool | None = None
     # Product history: what has worked (or they want to keep) and what broke them out,
     # irritated, or did nothing. Answered once either list is not None.
@@ -187,3 +188,45 @@ class FitBudgetResponse(BaseModel):
 
 # ChatRequest refers to RecommendationResponse, which is defined after it.
 ChatRequest.model_rebuild()
+
+
+# --- Progress tracking (see services/progress_store.py and services/progress_service.py) -------
+class Milestone(BaseModel):
+    """When one product in the routine should start (and finish) showing its effect, from the ingredient KB."""
+    asin: str
+    product_name: str = ""
+    ingredient: str = ""
+    concern: str = ""
+    first_signs_weeks: list[int] = Field(default_factory=lambda: [4, 8])  # [low, high]
+    full_effect_weeks: list[int] = Field(default_factory=lambda: [8, 12])
+    what_to_look_for: str = ""
+    kind: Literal["active", "supportive", "protective"] = "active"
+
+
+class PhotoMeta(BaseModel):
+    photo_id: str
+    taken_at: str  # ISO date (YYYY-MM-DD)
+    note: str = ""
+
+
+class SaveSessionRequest(BaseModel):
+    session_id: str
+    created_at: str | None = None
+    monk_tone: int = 0
+    observed_concerns: list[str] = Field(default_factory=list)
+    skin_type_estimate: str = ""
+    recommendations: list[RecommendationResponse] = Field(default_factory=list)
+    skin_profile: SkinProfile | None = None
+
+
+class ProgressSession(SaveSessionRequest):
+    conversation_summary: str = ""
+    start_date: str | None = None  # the day they started the routine; editable on the progress page
+    timeline: list[Milestone] = Field(default_factory=list)
+    timeline_key: list[str] = Field(default_factory=list)  # ASINs the timeline was built for
+    timeline_error: str | None = None  # set when the timeline couldn't be built (e.g. OpenAI down)
+    photos: list[PhotoMeta] = Field(default_factory=list)
+
+
+class UpdateSessionRequest(BaseModel):
+    start_date: str = Field(pattern=r"^\d{4}-\d{2}-\d{2}$")

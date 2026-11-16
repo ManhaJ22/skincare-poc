@@ -354,3 +354,54 @@ def retrieve_relevant_products(skin_profile: SkinProfile, top_k: int = 5, doc_ty
     hits = _query(embedding, where, n_results=15)
     docs = [hit["doc"] for hit in hits if not tone_rules.is_excluded(hit["meta"], monk_tone)]
     return deduplicate_by_step(docs, max_results=top_k)
+
+# --- Ingredient RAG (persistent "skinsage_ingredients" collection, built by utils/embed_knowledge_base.py) ---
+_async_openai = None
+_ingredient_collection = None
+
+
+def _ingredient_collection_count() -> int:
+    """Opens the persistent collection on first use; 0 if it hasn't been built yet."""
+    from utils.embed_knowledge_base import get_collection
+
+    global _ingredient_collection
+    if _ingredient_collection is None:
+        _ingredient_collection = get_collection()
+    return _ingredient_collection.count()
+
+
+def _ingredient_hits(embedding: list[float], n_results: int, count: int) -> list[str]:
+    result = _ingredient_collection.query(
+        query_embeddings=[embedding], n_results=min(n_results, count), include=["documents"]
+    )
+    return result["documents"][0]
+
+
+async def retrieve_context(query: str, n_results: int = 5) -> list[str]:
+    """
+    Top-n ingredient KB chunks for a query, ready to inject into the GPT-4o system prompt.
+    Returns [] if the collection hasn't been built yet (run utils/embed_knowledge_base.py).
+    """
+    import asyncio
+
+    from openai import AsyncOpenAI
+
+    global _async_openai
+    count = _ingredient_collection_count()
+    if count == 0:
+        return []
+    if _async_openai is None:
+        _async_openai = AsyncOpenAI()
+    response = await _async_openai.embeddings.create(model=EMBEDDING_MODEL, input=[query])
+    return await asyncio.to_thread(_ingredient_hits, response.data[0].embedding, n_results, count)
+
+
+def retrieve_ingredient_context(query: str, n_results: int = 4) -> list[str]:
+    """
+    Sync twin of retrieve_context for the sync endpoints (/chat runs in FastAPI's threadpool, where
+    asyncio.run would strand the cached AsyncOpenAI client on a closed event loop).
+    """
+    count = _ingredient_collection_count()
+    if count == 0:
+        return []
+    return _ingredient_hits(_embed([query])[0], n_results, count)

@@ -25,7 +25,7 @@ Return ONLY a JSON object matching this schema, with every other field left at i
   "confirmed_concerns": [],
   "allergies": null,
   "budget_monthly": null,
-  "goals": [],
+  "goals": null,
   "fragrance_free": null,
   "products_liked": null,
   "products_disliked": null

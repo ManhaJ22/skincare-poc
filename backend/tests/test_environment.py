@@ -193,7 +193,7 @@ def test_chat_passes_environment_and_old_clients_work(monkeypatch):
     seen = []
     monkeypatch.setattr(rag_service, "retrieve_relevant_products", lambda profile: [])
     monkeypatch.setattr(conversation_service, "get_next_response",
-                        lambda h, p, m, c, env=None: seen.append(env) or ("Any allergies?", p, False))
+                        lambda h, p, m, c, env=None, **kw: seen.append(env) or ("Any allergies?", p, False))
     client = TestClient(main.app)
     body = {"conversation_history": [], "skin_profile": {"monk_tone": 6}, "user_message": "hi"}
 

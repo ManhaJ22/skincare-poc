@@ -1,0 +1,191 @@
+SKINSAGE KNOWLEDGE BASE — AZELAIC ACID & SPF/SUNSCREEN
+Version 1.0 | Compiled November 2026 | Layer 1 (Clinical Evidence)
+Sources: Solomon et al. Cutis 2016; Elewski et al. Arch Dermatol 2003; Thiboutot et al. J Drugs Dermatol 2009;
+         Shucheng et al. Dermatol Ther 2024; Baliña & Graupe Int J Dermatol 1991; Kircik JDD 2011;
+         Kohli et al. Br J Dermatol 2018; Castanedo-Cazares et al. Photodermatol 2014;
+         Doan et al. J Drugs Dermatol 2026; Mar et al. Australasian J Dermatol 2025
+
+================================================================================
+PART 1: AZELAIC ACID (AzA)
+================================================================================
+
+MECHANISM OF ACTION
+-------------------
+- Dicarboxylic acid; inhibits tyrosinase (melanin synthesis enzyme) selectively in
+  hyperactive melanocytes — leaves normal melanocytes intact
+- No depigmentation risk; no ochronosis risk (unlike hydroquinone)
+- Simultaneous anti-inflammatory action via NF-κB and p38 MAPK suppression
+- Addresses PIH at both trigger (inflammation) and outcome (pigment excess) simultaneously
+- Bacteriostatic against C. acnes; normalizes follicular keratinization
+- Not pregnancy category X; considered safe in pregnancy (use with physician guidance)
+
+AVAILABLE CONCENTRATIONS
+------------------------
+- 10%: OTC; minimal controlled trial evidence at this exact concentration
+- 15%: FDA-approved for rosacea; most published trial evidence; gel > cream for delivery
+- 20%: Standard for melasma RCTs; also used for PIH and medical peels
+- 25–30%: Medical/professional peels only — not for OTC recommendation
+
+ONSET TIMELINES BY CONCERN
+---------------------------
+
+Rosacea (15% gel):
+  Week 4–6:   Subjective improvement reported by patients
+  Week 12:    IGA success rate 32% vs. 23.5% vehicle (Solomon et al., Cutis 2016)
+              Lesion reduction: 61.6% vs. 50.8% vehicle
+  Week 15:    Superiority over metronidazole 0.75% gel established (Elewski et al., Arch Dermatol 2003)
+  Note: 81.4% of patients achieved ≥75% lesion reduction by week 12 in dual oral+topical regimen
+        (Thiboutot et al., J Drugs Dermatol 2009)
+
+PIH — Post-Inflammatory Hyperpigmentation (20%):
+  Week 8:     Erythema component (PIE) begins improving
+  Week 12:    PIH intensity, size, number, and melanin index reach statistical significance
+              Total effective rate: 100% AzA vs. 56.7% placebo (Shucheng et al., Dermatol Ther 2024)
+              >60% improvement rate in 73.3% AzA patients vs. 13.3% placebo (Fitzpatrick III–IV)
+
+Melasma (20%):
+  Week 4:     Visible improvement begins
+  Week 12:    ≥50% lesion reduction in most patients
+  Month 24:   20% AzA broadly comparable to 4% hydroquinone
+              Overall improvement: 64.8% (AzA) vs. 72.5% (HQ)
+              n=329 (Baliña & Graupe, Int J Dermatol 1991)
+
+Acne (15–20%):
+  Week 4–8:   Lesion reduction accelerates
+  Week 12:    DLQI improvement documented; peel effects persist 12 weeks post-final treatment
+
+SEVERITY MODIFIERS
+------------------
+Mild PIH: 8–12 weeks on AzA monotherapy
+Moderate PIH: 12–16 weeks; combination with niacinamide or vitamin C accelerates
+Severe PIH or melasma: 24+ weeks; dermatologist referral warranted for Rx-strength options
+
+MONK TONE GUIDANCE
+------------------
+Monk 1–5:  AzA appropriate for rosacea and mild PIH; standard 15% gel or 20% cream
+Monk 6–10: PREFERRED agent for PIH alongside niacinamide due to:
+           - Selective tyrosinase inhibition (no hypopigmentation risk)
+           - Anti-inflammatory mechanism addresses PIH trigger
+           - No ochronosis risk (hydroquinone alternative)
+           - Well-tolerated in Fitzpatrick IV–VI (Kircik pilot study 2011)
+           SPF pairing is mandatory — UV re-triggers melanin production
+
+COMPARISON TO ALTERNATIVES (melasma/PIH, Monk 6–10 safety priority)
+----------------------------------------------------------------------
+1. Azelaic acid — HIGH safety; selective mechanism; dual anti-inflammatory + depigmenting
+2. Niacinamide — HIGH safety; different mechanism (melanosome transfer block); compatible combination
+3. Vitamin C — MEDIUM safety; L-ascorbic acid irritating on sensitive deeper skin; stability issues
+4. Kojic acid — MEDIUM safety; EU-capped at 1% (limits efficacy); contact sensitization risk
+5. Hydroquinone — GOLD STANDARD benchmark but: hypopigmentation risk; ochronosis risk;
+                  NOT pregnancy-safe; FDA safety review ongoing
+
+CONTRAINDICATIONS & CAUTIONS
+-----------------------------
+- Stinging or burning on application common at initiation (especially 15–20%); usually resolves by week 2–4
+- Apply to clean, dry skin; moisturizer over top reduces initial stinging
+- Patch test for sensitive/rosacea skin before full-face application
+- Avoid eyes, mucous membranes
+- Drug interactions: none clinically significant at cosmetic concentrations
+- Pregnancy: considered generally safe; consult physician for medical-grade use
+
+================================================================================
+PART 2: SPF / SUNSCREEN
+================================================================================
+
+MECHANISM & TIMING
+------------------
+- UV protection is IMMEDIATE from first application
+- PIH prevention benefit begins with first use — UV re-stimulates melanin transfer
+- PIH prevention post-procedure: benefit established within ~31 days (mean 21 applications)
+  Source: Mar et al., Australasian J Dermatol 2025 (14 studies, 369 patients)
+  Sunscreen was the ONLY intervention consistently preventing post-laser PIH (~98% prevention rate)
+- Hyperpigmentation treatment benefit from SPF as adjunct to actives accumulates over 8–24 weeks
+
+THE VISIBLE LIGHT FINDING (Critical for Monk 6–10)
+---------------------------------------------------
+Kohli et al. (Br J Dermatol 2018, n=10, Fitzpatrick IV–VI):
+- Visible/HEV light causes PERSISTENT pigmentation in dark skin that does NOT occur in lighter skin
+- Standard sunscreens do NOT block visible light
+- This is a clinical finding, not cosmetic concern
+- Iron oxide in tinted sunscreens blocks visible/HEV light
+- Recommendation: tinted mineral sunscreen with iron oxide for Monk 6–10 with active pigmentation
+
+MINERAL vs. CHEMICAL FILTERS
+-----------------------------
+Chemical filters:
+  - No white cast
+  - Practical compliance choice for Monk 6–10
+  - Acceptable for most Monk 6–10 patients without visible light concern if no active PIH
+
+Mineral filters (ZnO/TiO₂):
+  - >10% ZnO: significant white cast — compliance problem for Monk 6–10
+  - 5% ZnO (nano): "reasonable" white cast in standardized scoring
+  - Tinted with iron oxide: reduces grey cast + adds HEV light protection
+  - FIRST-LINE CHOICE for Monk 6–10 with active pigmentation treatment
+
+TINTED SUNSCREEN EVIDENCE
+--------------------------
+Castanedo-Cazares et al. (Photodermatol Photoimmunol Photomed 2014, n=61, 8-week RCT):
+  - Iron oxide + SPF 60 vs. UV-only SPF 50+ (both adjunct to hydroquinone)
+  - MASI improvement: 77.8% vs. 61.9% (p<0.001)
+  - Melanin reduction: 32.8% vs. 19.1%
+
+Doan et al. (J Drugs Dermatol 2026):
+  - UV+VL (tinted) vs. UV-only: 75% vs. 60% MASI reduction
+
+Product transparency gap: 97.3% of tinted sunscreens do not list iron oxide as an active
+ingredient; only 3 of 24 brands disclose concentration (~2% iron oxide estimated for
+meaningful HEV blocking).
+
+SPF RECOMMENDATION BY MONK TONE
+---------------------------------
+Monk 1–3:
+  - SPF 30+ minimum
+  - Primary goal: burn prevention and photoaging prevention
+  - Any broad-spectrum (UVA + UVB) filter works
+  - Reapply every 2 hours in sun exposure
+
+Monk 4–6:
+  - SPF 30–50
+  - Tinted if any melasma or active pigmentation present
+  - UVA-PF/SPF ratio ≥2/3 matters more than raw SPF number
+  - PA++++ or high UVA-PF formulas preferred
+
+Monk 7–10:
+  - SPF 30 minimum; SPF 50 during active pigmentation treatment
+  - Tinted mineral with iron oxide as FIRST CHOICE
+  - Address white cast compliance proactively — offer chemical alternative
+  - If tinted mineral unavailable or unacceptable: chemical filter SPF 50
+  - Reapply every 2 hours; compliance > SPF number in outcome impact
+
+APPLICATION PROTOCOL
+--------------------
+- Apply as LAST step in morning routine (after serums and moisturizer)
+- Amount: approximately 1/4 teaspoon (1.5–2 ml) for face alone
+- Reapply every 2 hours during sun exposure, or after swimming/sweating
+- Do NOT skip on cloudy days (UV penetrates cloud cover)
+- Indoor use: relevant for Monk 6–10 near windows (glass blocks UVB but not UVA)
+
+SPF AS MANDATORY PAIRING WITH ACTIVES
+--------------------------------------
+SPF must accompany these ingredients — UV undermines their effect:
+- Azelaic acid: UV re-triggers tyrosinase; AzA gains negated without SPF
+- Niacinamide: UV re-stimulates melanin transfer pathway
+- Vitamin C: UV degrades L-ascorbic acid; SPF extends antioxidant reservoir
+- AHA/BHA: exfoliation increases photosensitivity; PIH risk without SPF (Monk 6–10 especially)
+- Retinoids: photosensitizing; evening-only use + morning SPF is non-negotiable
+- Kojic acid, azelaic acid, hydroquinone: all evidence-based with concurrent SPF use
+
+SUNSCREEN AI GUIDANCE FOR SKINSAGE
+------------------------------------
+When to recommend tinted mineral SPF:
+  - User Monk tone 6–10 AND any of: active PIH, melasma, post-procedure care, using AHA/BHA/retinoids
+
+When to recommend chemical SPF as alternative:
+  - Monk 6–10 user where compliance concern is flagged
+  - No active pigmentation treatment
+  - User preference for lightweight texture
+
+Disclaimer to include with SPF recommendations:
+  "This is not medical advice. For diagnosed skin conditions such as melasma or severe PIH,
+   please consult a board-certified dermatologist. Sunscreen does not replace medical treatment."
