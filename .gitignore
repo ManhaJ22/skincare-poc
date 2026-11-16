@@ -8,3 +8,5 @@ utk_images/
 test-images/
 results.json
 results_dashboard.html
+chroma_db/
+backend/data/

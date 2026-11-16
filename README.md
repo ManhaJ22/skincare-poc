@@ -97,6 +97,19 @@ To tune the rules, edit the thresholds at the top of the file (dew point is used
 - **Seasonal prompt:** set `updated_at` to 70 days ago and `season` to last season in the saved profile, then reload. Click "Not now", reload, and confirm nothing shows.
 - **Old clients:** `pytest tests/test_environment.py` covers requests with no `environment` field.
 
+## Progress tracking
+
+Once the routine is built, "Track your progress" opens `/app/progress.html`. It shows when each product
+should start showing results (predicted from the ingredient knowledge base in
+`backend/knowledge_base/ingredients_progress_kb/`), what's happening around the current week, and lets the
+user save progress photos with a before/after compare.
+
+- Storage is plain files for a single demo user: `backend/data/sessions/<session_id>.json` and
+  `backend/data/photos/<session_id>/`. The folder is gitignored; delete it to start fresh.
+- There is **no auth**. Anyone who can reach the backend (e.g. through an ngrok URL) and knows a session id
+  can see its photos. Don't use real users' photos with a public tunnel.
+- The timeline is built once per routine (`POST /sessions`) and rebuilt only when the set of products changes.
+
 ## Monk tone rules
 Product files declare `Monk tones best`, `Irritation potential`, `White cast` (sunscreens) and `Targets`. `backend/services/tone_rules.py` uses them to exclude and re-rank products per tone band (light 1-3, medium 4-6, deep 7-10). Tune the boosts and penalties at the top of that file.
 

@@ -4,8 +4,8 @@ render one HTML dashboard of what came back.
 
   1. Reads UTKFace images from a local flat folder (--utk-dir; filenames are
      age_gender_race_timestamp.jpg, race 0=White 1=Black 2=Asian 3=Indian 4=Other) and screens
-     them in random order with a MediaPipe face pre-filter (scripts/face_prefilter.py): exactly one
-     face, at least 15% of the image, yaw within +/-15 and pitch within +/-10 degrees. It keeps
+     them in random order with a MediaPipe face pre-filter (scripts/face_prefilter.py): not
+     overexposed (mean grayscale brightness <= 200), exactly one face, at least 15% of the image, yaw within +/-15 and pitch within +/-10 degrees. It keeps
      sampling until each race group has N passing faces, copied to utk_images/{index}_{race}_{age}.jpg
      (label readable from the filename). Every checked image is logged to utk_images/prefilter_log.csv
      with its rejection reason, and a checked-vs-accepted summary is printed.
@@ -102,7 +102,8 @@ def interleave_by_race(images: list[dict]) -> list[dict]:
     return out
 
 
-LOG_FIELDS = ["source_file", "race", "age", "status", "reason", "yaw", "pitch", "face_area", "n_faces", "saved_as"]
+LOG_FIELDS = ["source_file", "race", "age", "status", "reason", "brightness", "yaw", "pitch", "face_area",
+              "n_faces", "saved_as"]
 
 
 def _round(value, digits=1):
@@ -146,7 +147,7 @@ def collect_images(utk_dir: Path, image_dir: Path, per_group: int, seed: int, in
             result = prefilter.check(image)
             checked[race] += 1
             entry = {"source_file": source.name, "race": race, "age": age, "reason": result.reason,
-                     "yaw": _round(result.yaw), "pitch": _round(result.pitch),
+                     "brightness": _round(result.brightness), "yaw": _round(result.yaw), "pitch": _round(result.pitch),
                      "face_area": _round(result.face_area, 3), "n_faces": result.n_faces, "saved_as": ""}
             if result.ok:
                 name = f"{index:03d}_{slug(race)}_{age}.jpg"
@@ -178,7 +179,7 @@ def print_prefilter_summary(stats: dict) -> None:
     from face_prefilter import REASONS
 
     checked, accepted, reasons = stats["checked"], stats["accepted"], stats["reasons"]
-    abbrev = {"no_face": "no_face", "multiple_faces": "multi", "face_too_small": "small",
+    abbrev = {"overexposed": "bright", "no_face": "no_face", "multiple_faces": "multi", "face_too_small": "small",
               "yaw_out_of_range": "yaw", "pitch_out_of_range": "pitch"}
     print("\nFace pre-filter summary")
     print(f"{'Race':<18}{'checked':>8}{'accepted':>9}{'rate':>6}  " + "".join(f"{abbrev[r]:>8}" for r in REASONS))
@@ -242,7 +243,8 @@ def _detail(response: httpx.Response) -> str:
         return f"{response.status_code}: {response.text[:300]}"
 
 
-async def process(client: httpx.AsyncClient, sem: asyncio.Semaphore, item: dict, seed: int, prompt: str) -> dict:
+async def process(client: httpx.AsyncClient, sem: asyncio.Semaphore, vision_sem: asyncio.Semaphore,
+                  item: dict, seed: int, prompt: str) -> dict:
     persona = random.Random(seed + item["index"]).choice(PERSONAS)
     result = {k: item[k] for k in ("index", "file", "race", "age")}
     result.update(prompt=prompt, persona=persona, monk_tone=None, observed_concerns=[], vision_skin_type="",
@@ -250,7 +252,9 @@ async def process(client: httpx.AsyncClient, sem: asyncio.Semaphore, item: dict,
     async with sem:
         try:
             b64 = base64.b64encode(item["path"].read_bytes()).decode()
-            res = await client.post("/analyze", json={"image_base64": f"data:image/jpeg;base64,{b64}", "prompt": prompt})
+            async with vision_sem:  # caps concurrent vision calls separately from the overall limit
+                res = await client.post("/analyze",
+                                        json={"image_base64": f"data:image/jpeg;base64,{b64}", "prompt": prompt})
             if res.status_code != 200:
                 result["error"] = f"/analyze {_detail(res)}"
                 return result
@@ -276,15 +280,18 @@ async def process(client: httpx.AsyncClient, sem: asyncio.Semaphore, item: dict,
     return result
 
 
-async def run_all(items: list[dict], base_url: str, concurrency: int, seed: int, prompt: str) -> list[dict]:
+async def run_all(items: list[dict], base_url: str, concurrency: int, vision_concurrency: int,
+                  seed: int, prompt: str) -> list[dict]:
+    # Created here, not at module level, so they bind to the event loop asyncio.run starts.
     sem = asyncio.Semaphore(concurrency)
+    vision_sem = asyncio.Semaphore(vision_concurrency)
     async with httpx.AsyncClient(base_url=base_url, timeout=180) as client:
         try:
             (await client.get("/health")).raise_for_status()
         except httpx.HTTPError as e:
             raise SystemExit(f"Backend not reachable at {base_url} ({e}). Start it with: cd backend && uvicorn main:app")
-        # All tasks go into one gather; the semaphore caps how many hit the backend (and OpenAI) at once.
-        results = await tqdm.gather(*(process(client, sem, item, seed, prompt) for item in items),
+        # All tasks go into one gather; the semaphores cap how many hit the backend (and OpenAI) at once.
+        results = await tqdm.gather(*(process(client, sem, vision_sem, item, seed, prompt) for item in items),
                                     desc="Analyzing", unit="img")
     return sorted(results, key=lambda r: r["index"])
 
@@ -444,12 +451,23 @@ def render_dashboard(results: list[dict], image_dir: Path, out: Path) -> None:
 
 
 # --- Main ------------------------------------------------------------------------------------
+def same_dir(a: str, b: str) -> bool:
+    """Path equality that treats WSL's /mnt/c/... and Windows' C:\\... as the same folder."""
+    def norm(p: str) -> str:
+        p = p.replace("\\", "/").rstrip("/").lower()
+        match = re.match(r"^/mnt/([a-z])(/.*)?$", p)
+        return f"{match.group(1)}:{match.group(2) or ''}" if match else p
+    return norm(a) == norm(b)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--base-url", default="http://localhost:8000")
     parser.add_argument("--utk-dir", default=DEFAULT_UTK_DIR, help="flat folder of UTKFace .jpg files")
     parser.add_argument("--per-group", type=int, default=15, help="images per race group (5 groups)")
-    parser.add_argument("--concurrency", type=int, default=8, help="max requests in flight at once")
+    parser.add_argument("--concurrency", type=int, default=5, help="max images being processed at once")
+    parser.add_argument("--vision-concurrency", type=int, default=5,
+                        help="max /analyze (vision) calls in flight at once")
     parser.add_argument("--prompt", choices=["fairface", "app"], default="fairface",
                         help="vision prompt: 'fairface' (batch-testing prompt) or 'app' (what real users get)")
     parser.add_argument("--seed", type=int, default=42)
@@ -457,13 +475,19 @@ def main() -> None:
     parser.add_argument("--refresh", action="store_true", help="delete and re-select the images")
     parser.add_argument("--include-children", action="store_true", help=f"keep faces younger than {MIN_ADULT_AGE}")
     parser.add_argument("--render-only", action="store_true", help="rebuild the HTML from results.json; no API calls")
+    parser.add_argument("--prefilter-only", action="store_true",
+                        help="only pick and pre-filter the images, then stop (e.g. run this step in WSL when "
+                             "Windows Smart App Control blocks MediaPipe, and the rest on Windows)")
     face = parser.add_argument_group("face pre-filter (runs locally before any API call)")
     face.add_argument("--max-yaw", type=float, default=15, help="max head turn left/right, degrees")
     face.add_argument("--max-pitch", type=float, default=10, help="max head tilt up/down, degrees")
     face.add_argument("--min-face-area", type=float, default=0.15, help="min face box as a fraction of the image")
+    face.add_argument("--max-brightness", type=float, default=200,
+                      help="reject images whose mean grayscale brightness (0-255) is above this")
     face.add_argument("--save-rejected", action="store_true", help="also copy rejected images to utk_images/rejected/{reason}/")
     args = parser.parse_args()
-    filter_settings = {"max_yaw": args.max_yaw, "max_pitch": args.max_pitch, "min_face_area": args.min_face_area}
+    filter_settings = {"max_yaw": args.max_yaw, "max_pitch": args.max_pitch, "min_face_area": args.min_face_area,
+                       "max_brightness": args.max_brightness}
     utk_dir = Path(args.utk_dir).expanduser().resolve()
 
     image_dir = args.out_dir / "utk_images"
@@ -478,7 +502,7 @@ def main() -> None:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.exists() else {}
         items = select_per_group(list_images(image_dir), args.per_group)
         reusable = (not args.refresh and manifest.get("filter") == filter_settings
-                    and manifest.get("utk_dir") == str(utk_dir)
+                    and same_dir(manifest.get("utk_dir", ""), str(utk_dir))
                     and len(items) >= args.per_group * len(RACES))
         if reusable:
             print(f"Using existing pre-filtered images in {image_dir} (pass --refresh to re-select)")
@@ -498,7 +522,11 @@ def main() -> None:
                                                  "seed": args.seed, "prefilter": stats}, indent=2), encoding="utf-8")
             items = select_per_group(list_images(image_dir), args.per_group)
         print_prefilter_summary(stats)
-        results = asyncio.run(run_all(items, args.base_url, args.concurrency, args.seed, args.prompt))
+        if args.prefilter_only:
+            print(f"Pre-filter done: {len(items)} images in {image_dir.resolve()}")
+            return
+        results = asyncio.run(run_all(items, args.base_url, args.concurrency, args.vision_concurrency,
+                                      args.seed, args.prompt))
         results_json.write_text(json.dumps(results, indent=2), encoding="utf-8")
 
     render_dashboard(results, image_dir, dashboard)

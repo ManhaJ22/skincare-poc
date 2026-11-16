@@ -315,6 +315,22 @@
     #recommendations[hidden] { display: none; }
     #recommendations > h2 { font-size: 24px; }
     .disclaimer { color: var(--ink-muted); font-size: 13px; margin: -4px 0 16px; }
+    /* Link to the progress page (progress.html) */
+    a.link-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-weight: 700; text-decoration: none; color: var(--navy-700);
+      background: var(--paper-light); border: 2px solid var(--ink);
+      border-radius: 14px 18px 14px 16px; padding: 9px 16px; box-shadow: 2px 3px 0 var(--ink);
+    }
+    a.link-btn:hover { background: var(--clay); }
+    a.link-btn[hidden] { display: none; }
+    .track-cta {
+      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px;
+      margin: 0 0 18px; padding: 14px 18px;
+      background: var(--sage-100); border: 2px solid var(--ink); border-radius: var(--radius-paper);
+    }
+    .track-cta p { margin: 0; flex: 1 1 260px; }
+    .track-cta strong { font-family: var(--font-display); color: var(--navy-700); }
     .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 26px 20px; padding-top: 10px; }
     .card {
       position: relative;
@@ -972,6 +988,7 @@
           <path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </button>
+      <a class="link-btn" id="progress-link" href="progress.html" hidden>Progress</a>
       <button type="button" class="secondary" id="reset-btn" title="Cancel any pending request and clear the photo, profile and chat">Start over</button>
     </div>
   </header>
@@ -1036,6 +1053,10 @@
   <section id="recommendations" hidden>
     <h2><span class="num">3</span>Your routine</h2>
     <p class="disclaimer">Results may vary. Patch test new products first. This is not medical advice.</p>
+    <div class="track-cta">
+      <p><strong>Track your progress.</strong> See when each product should start showing results, and save photos as you go.</p>
+      <button type="button" id="track-btn">Track your progress →</button>
+    </div>
     <div class="budget" id="budget-box" hidden>
       <div class="budget-head">
         <span class="budget-total" id="budget-total"></span>
@@ -1250,6 +1271,7 @@
       selected: new Set(),  // ASINs the user added to their routine; drives the "How to use" panel
       usageShown: false,    // the panel opens by itself on the first add only
       envSkipped: false,    // the user skipped the climate card in this consultation
+      sessionId: null,      // progress-tracking session for this routine (see saveProgressSession)
     };
 
     function loadRatings() {
@@ -1396,6 +1418,7 @@
         selected: new Set(),
         usageShown: false,
         envSkipped: false,
+        sessionId: null,
       });
       saveSelected();
       closeUsage();
@@ -1463,7 +1486,7 @@
       { label: "Sensitivities", done: (p) => p?.allergies != null, answer: true },
       { label: "Fragrance preference", done: (p) => p?.fragrance_free != null, answer: true },
       { label: "Products tried", done: (p) => p?.products_liked != null || p?.products_disliked != null, answer: true },
-      { label: "Skin goals", done: (p) => p?.goals.length > 0, optional: true },
+      { label: "Skin goals", done: (p) => p?.goals?.length > 0, optional: true },
       { label: "Monthly budget", done: (p) => p?.budget_monthly != null, answer: true },
       { label: "Routine built", done: () => state.complete },
     ];
@@ -2102,6 +2125,7 @@
       $("recommendations").hidden = true;
       state.history = [];
       state.complete = false;
+      state.sessionId = null; // a new consultation becomes a new progress session
       state.busy = true;
       updateControls();
       const controller = (state.controller = new AbortController());
@@ -2163,6 +2187,7 @@
         if (data.is_complete && data.recommendations.length) {
           state.complete = true;
           renderRecommendations(data.recommendations, data.budget);
+          saveProgressSession().catch(() => {}); // best effort; "Track your progress" saves again
         }
       } catch (err) {
         if (controller.signal.aborted) return; // reset while waiting; page is already cleared
@@ -2177,6 +2202,59 @@
         }
       }
     });
+
+    // --- Progress tracking (progress.html): save the routine on screen as a session ---
+    const LAST_SESSION_KEY = "dermalis.lastSessionId";
+
+    function showProgressLink() {
+      let id = null;
+      try {
+        id = localStorage.getItem(LAST_SESSION_KEY);
+      } catch {
+        // Storage unavailable; the link appears once a routine is saved in this page load.
+      }
+      id = id || state.sessionId;
+      $("progress-link").hidden = !id;
+      if (id) $("progress-link").href = `progress.html?session=${encodeURIComponent(id)}`;
+    }
+
+    async function saveProgressSession() {
+      if (!state.complete || !state.skinProfile) return null;
+      state.sessionId ||= crypto.randomUUID();
+      const p = state.skinProfile;
+      const session = await postJSON("/sessions", {
+        session_id: state.sessionId,
+        created_at: new Date().toISOString(),
+        monk_tone: p.monk_tone,
+        observed_concerns: p.observed_concerns,
+        skin_type_estimate: p.skin_type,
+        recommendations: visibleRecs().map((s) => s.rec),
+        skin_profile: p,
+      });
+      try {
+        localStorage.setItem(LAST_SESSION_KEY, state.sessionId);
+      } catch {
+        // Storage unavailable; the progress page falls back to the latest saved session.
+      }
+      showProgressLink();
+      return session;
+    }
+
+    $("track-btn").addEventListener("click", async () => {
+      const btn = $("track-btn");
+      btn.disabled = true;
+      btn.textContent = "Saving your routine…";
+      try {
+        // Save again: swaps, removals and budget changes since the routine was built count.
+        await saveProgressSession();
+        location.href = `progress.html?session=${encodeURIComponent(state.sessionId)}`;
+      } catch (err) {
+        showToast(`Couldn't save your routine: ${err.message}`);
+        btn.disabled = false;
+        btn.textContent = "Track your progress →";
+      }
+    });
+    showProgressLink();
 
     // --- Climate and environment (environment.js) ---
     const CLIMATE_ICON = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3c3.5 4.2 6 7.6 6 10.7A6 6 0 0 1 6 13.7C6 10.6 8.5 7.2 12 3z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>';

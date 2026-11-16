@@ -6,6 +6,7 @@ mediapipe.solutions.face_mesh API was removed in mediapipe 0.10.30 and isn't ins
 Python 3.13+. Head pose comes from the landmarker's facial transformation matrix.
 
 Rejection reasons, checked in this order:
+  overexposed (mean grayscale brightness above a threshold; checked before the model runs),
   no_face, multiple_faces, face_too_small, yaw_out_of_range, pitch_out_of_range
 """
 
@@ -20,7 +21,13 @@ MODEL_URL = ("https://storage.googleapis.com/mediapipe-models/face_landmarker/"
              "face_landmarker/float16/1/face_landmarker.task")
 MODEL_PATH = Path.home() / ".cache" / "fairface_harness" / "face_landmarker.task"
 
-REASONS = ["no_face", "multiple_faces", "face_too_small", "yaw_out_of_range", "pitch_out_of_range"]
+REASONS = ["overexposed", "no_face", "multiple_faces", "face_too_small", "yaw_out_of_range", "pitch_out_of_range"]
+
+
+def is_overexposed(image, threshold: float = 200) -> tuple[bool, float]:
+    """(too bright?, mean brightness 0-255) for a PIL image, from its grayscale mean."""
+    mean_brightness = float(np.array(image.convert("L")).mean())
+    return mean_brightness > threshold, mean_brightness
 
 
 def ensure_model(path: Path = MODEL_PATH) -> Path:
@@ -52,6 +59,7 @@ class FaceCheck:
     face_area: float | None = None  # landmark bounding box as a fraction of the image area
     yaw: float | None = None
     pitch: float | None = None
+    brightness: float | None = None  # mean grayscale value, 0-255
 
 
 def evaluate(face_landmarks, matrices, max_yaw: float, max_pitch: float, min_face_area: float) -> FaceCheck:
@@ -78,12 +86,14 @@ def evaluate(face_landmarks, matrices, max_yaw: float, max_pitch: float, min_fac
 
 
 class FacePrefilter:
-    def __init__(self, max_yaw: float = 15, max_pitch: float = 10, min_face_area: float = 0.15):
+    def __init__(self, max_yaw: float = 15, max_pitch: float = 10, min_face_area: float = 0.15,
+                 max_brightness: float = 200):
         import mediapipe as mp
         from mediapipe.tasks.python import BaseOptions, vision
 
         self._mp = mp
         self.max_yaw, self.max_pitch, self.min_face_area = max_yaw, max_pitch, min_face_area
+        self.max_brightness = max_brightness
         options = vision.FaceLandmarkerOptions(
             base_options=BaseOptions(model_asset_path=str(ensure_model())),
             running_mode=vision.RunningMode.IMAGE,
@@ -94,10 +104,15 @@ class FacePrefilter:
 
     def check(self, image) -> FaceCheck:
         """image: a PIL image."""
+        too_bright, brightness = is_overexposed(image, self.max_brightness)
+        if too_bright:
+            return FaceCheck(False, "overexposed", brightness=brightness)
         rgb = np.ascontiguousarray(np.asarray(image.convert("RGB")))
         result = self._landmarker.detect(self._mp.Image(image_format=self._mp.ImageFormat.SRGB, data=rgb))
-        return evaluate(result.face_landmarks, result.facial_transformation_matrixes,
-                        self.max_yaw, self.max_pitch, self.min_face_area)
+        check = evaluate(result.face_landmarks, result.facial_transformation_matrixes,
+                         self.max_yaw, self.max_pitch, self.min_face_area)
+        check.brightness = brightness
+        return check
 
     def close(self) -> None:
         self._landmarker.close()

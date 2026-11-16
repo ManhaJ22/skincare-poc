@@ -7,7 +7,9 @@ import numpy as np
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-from face_prefilter import evaluate, head_pose  # noqa: E402
+from PIL import Image  # noqa: E402
+
+from face_prefilter import evaluate, head_pose, is_overexposed  # noqa: E402
 
 
 def rotation(yaw=0.0, pitch=0.0):
@@ -60,3 +62,16 @@ def test_evaluate_reports_metrics():
     assert check.n_faces == 1
     assert check.face_area == pytest.approx(0.64)
     assert check.yaw == pytest.approx(5) and check.pitch == pytest.approx(-3)
+
+
+@pytest.mark.parametrize("value, threshold, expected", [
+    (250, 200, True),
+    (128, 200, False),
+    (200, 200, False),   # strictly greater than the threshold
+    (180, 170, True),    # custom threshold
+])
+def test_is_overexposed(value, threshold, expected):
+    image = Image.new("RGB", (32, 32), (value, value, value))
+    too_bright, brightness = is_overexposed(image, threshold)
+    assert too_bright is expected
+    assert brightness == pytest.approx(value)
